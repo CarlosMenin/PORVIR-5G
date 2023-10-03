@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oai-my5grantester
+  namespace: oai-cn5g
+  labels:
+    app: my5grantester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my5grantester
+  template:
+    metadata:
+      labels:
+        app: my5grantester
+    spec:
+      nodeSelector:
+        nodetype: server
+      containers:
+        - name: oai-my5grantester
+          image: carlosmenin/my5grantester:latest
+          #command: ["sleep", "infinity"]
+          env:
+            - name: NGAP_LOCAL_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NGAP_REMOTE_ADDR
+              value: amf
+            - name: GTPU_LOCAL_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MCC
+              value: "208"
+            - name: MNC
+              value: "95"
+            - name: TAC
+              value: 00a000
+            - name: GNBID
+              value: "000003"
+            - name: SST_GNB
+              value: "de"
+            - name: SST_UE
+              value: "222"
+            - name: SD
+              value: "00007b"
+            - name: MSIN
+              value: "00000000031"
+            - name: OPC
+              value: 63bfa50ee6523365ff14c1f45f88737d
+            - name: KEY
+              value: 0C0A34601D4F07677303652C0462535B
+            - name: AMF
+              value: "8000"
+            - name: SQN
+              value: "0000000"
+            - name: DNN
+              value: default
+            - name: TEST
+              value: parallel
+            - name: NUM_UE
+              value: "20"
+            - name: DELAY
+              value: "1000"
+            - name: TIME
+              value: "30"
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+            privileged: true

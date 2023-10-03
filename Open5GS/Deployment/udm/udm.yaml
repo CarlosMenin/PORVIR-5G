@@ -1,0 +1,95 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: open5gs-udm
+  namespace: cemenin
+  labels:
+    epc-mode: udm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: udm
+  template:
+    metadata:  
+      labels:
+        epc-mode: udm
+        app: open5gs-udm
+        # version: v2.6.1-26
+    spec:  
+      nodeSelector:
+        nodetype: server        
+        kubernetes.io/arch: amd64
+        #kubernetes.io/hostname: molejo
+      containers:
+        # - name: tcpdump-udm
+        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/udm-%F_%H%M.pcap"]
+        #   volumeMounts:
+        #     - name: tcpdump-persistent-storage
+        #       mountPath: /var/tcpdump
+
+        - name: udm
+          image: maikovisky/open5gs:ubuntu-latest    
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN", "SYS_MODULE"]
+
+          volumeMounts:
+            - name: open5gs-udm-config
+              mountPath: /open5gs/config-map/udm.yaml
+              subPath: "udm.yaml"
+
+          command: ["open5gs-udmd", "-c", "/open5gs/config-map/udm.yaml"]
+
+        # - name: metrics-udm
+        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   command: ["/bin/prometheus-node-exporter"]
+      volumes:
+        - name: open5gs-udm-config
+          configMap:
+            name: open5gs-udm-config
+
+        - name: tcpdump-persistent-storage
+          persistentVolumeClaim:
+            claimName: open5gs-tcpdump-pv-claim
+
+
+# ---
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: open5gs-udm
+#   namespace: cemenin
+#   labels:
+#     epc-mode: udm
+# spec:
+#   selector:
+#     matchLabels:
+#       epc-mode: udm
+#   endpoints:
+#   - interval: 30s
+#     port: http-open5gs-udm-9100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: open5gs-udm
+  namespace: cemenin
+  labels:
+    epc-mode: udm
+    prometheus: open5gs-monitor
+spec:
+  selector:
+    epc-mode: udm
+  ports:
+    - name: http2-open5gs-udm-80
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    # - name: http-open5gs-udm-9100
+    #   protocol: TCP
+    #   port: 9100
+    #   targetPort: 9100

@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: open5gs-smf
+  namespace: cemenin
+  labels:
+    epc-mode: smf
+    promotheus: open5gs-monitor
+spec:
+  selector:
+    epc-mode: smf
+  #type: ClusterIP
+  ports:
+    - name: http2-open5gs-smf-80
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: open5gs-smf-udp-2152
+      protocol: UDP
+      port: 2152
+      targetPort: 2152
+    - name: open5gs-smf-udp-2123
+      protocol: UDP
+      port: 2123
+      targetPort: 2123
+    - name: open5gs-smf-udp-8805
+      protocol: UDP
+      port: 8805
+      targetPort: 8805
+    - name: open5gs-smf-sctp-3868
+      protocol: SCTP
+      port: 3868
+      targetPort: 3868
+    - name: http-open5gs-smf-tcp-9090
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+---    
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: open5gs-smf
+  namespace: cemenin
+  labels:
+    epc-mode: smf
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: smf
+  template:
+    metadata:  
+      labels:
+        epc-mode: smf
+        app: open5gs-smf
+        prometheus: open5gs-monitor
+    spec:  
+      nodeSelector:
+        nodetype: server
+        kubernetes.io/arch: amd64
+        #kubernetes.io/hostname: molejo
+      containers:
+        # - name: tcpdump-smf
+        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/smf-%F_%H%M.pcap"]
+        #   volumeMounts:
+        #     - name: "dev-net-tun"
+        #       mountPath: "/dev/net/tun" # Needed for VPN
+        #     - name: tcpdump-persistent-storage
+        #       mountPath: /var/tcpdump
+
+        - name: smf
+          image: maikovisky/open5gs:ubuntu-latest  
+          imagePullPolicy: Always  
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN", "SYS_MODULE"]
+          resources:
+            requests:
+              memory: "150Mi"
+              cpu: "100m"
+            limits:
+              memory: "250Mi"
+              cpu: "200m"
+
+          volumeMounts:
+            - name: open5gs-smf-config
+              mountPath: /open5gs/config-map/smf.yaml
+              subPath: "smf.yaml"
+
+            - name: freediameter-smf-config
+              mountPath: /etc/freeDiameter/smf.conf
+              subPath: "smf.conf"
+
+            - name: freediameter-smf-cert-config
+              mountPath: /etc/freeDiameter/smf.cert.pem
+              subPath: "smf.cert.pem"
+
+            - name: freediameter-smf-key-config
+              mountPath: /etc/freeDiameter/smf.key.pem
+              subPath: "smf.key.pem"
+
+            - name: freediameter-cacert-config
+              mountPath: /etc/freeDiameter/cacert.pem
+              subPath: "cacert.pem"            
+
+            - name: "dev-net-tun"
+              mountPath: "/dev/net/tun" # Needed for VPN
+              
+          command: ["open5gs-smfd", "-c", "/open5gs/config-map/smf.yaml"]
+          #command: ["sleep", "1d"]
+
+        # - name: metrics-smf
+        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   command: ["/bin/prometheus-node-exporter"]
+        #   volumeMounts:
+        #     - name: "dev-net-tun"
+        #       mountPath: "/dev/net/tun" # Needed for VPN
+      volumes:
+        - name: open5gs-smf-config
+          configMap:
+            name: open5gs-smf-config
+            
+        - name: freediameter-smf-config
+          configMap:
+            name: freediameter-smf-config
+
+        - name: freediameter-smf-cert-config
+          configMap:
+            name: freediameter-smf-cert-config
+
+        - name: freediameter-smf-key-config
+          configMap:
+            name: freediameter-smf-key-config
+        
+        - name: freediameter-cacert-config
+          configMap:
+            name: freediameter-cacert-config
+
+        - name: tcpdump-persistent-storage
+          persistentVolumeClaim:
+            claimName: open5gs-tcpdump-pv-claim
+
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: open5gs-smf
+  namespace: cemenin
+  labels:
+    epc-mode: smf
+spec:
+  selector:
+    matchLabels:
+      epc-mode: smf
+  endpoints:
+  - interval: 5s
+    port: http-open5gs-smf-tcp-9090

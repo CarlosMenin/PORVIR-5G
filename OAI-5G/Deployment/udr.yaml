@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-udr
+  namespace: oai-cn5g
+  labels:
+    app: udr
+spec:
+  selector:
+    matchLabels:
+      app: udr
+  template:
+    metadata:
+      labels:
+        app: udr
+    spec:
+      nodeSelector:
+        nodetype: server
+      containers:
+        - name: oai-udr
+          image: oaisoftwarealliance/oai-udr:latest
+          ports:
+            - name: http1
+              containerPort: 80
+              protocol: TCP
+            - name: http2
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Europe/Paris
+            - name: MYSQL_IPV4_ADDRESS
+              value: mysql
+            - name: MYSQL_USER
+              value: test
+            - name: MYSQL_PASS
+              value: test
+            - name: MYSQL_DB
+              value: oai_db
+            - name: WAIT_MYSQL
+              value: "120"
+            - name: USE_FQDN_DNS
+              value: "yes"
+            - name: REGISTER_NRF
+              value: "yes"
+            - name: NRF_IPV4_ADDRESS
+              value: nrf
+            - name: NRF_FQDN
+              value: nrf.oai-cn5g.svc.cluster.local
+            - name: USE_HTTP2
+              value: "yes"
+            - name: NRF_PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: udr
+  namespace: oai-cn5g
+spec:
+  selector:
+    app: udr
+  ports:
+    - name: http1
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: http2
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

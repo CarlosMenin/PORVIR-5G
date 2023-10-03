@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: open5gs-bsf
+  namespace: cemenin
+  labels:
+    epc-mode: bsf
+    prometheus: open5gs-monitor
+spec:
+  selector:
+    epc-mode: bsf
+  ports:
+    - name: http-open5gs-bsf-80
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    # - name: http-open5gs-bsf-9100
+    #   protocol: TCP
+    #   port: 9100
+# ---
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: open5gs-bsf
+#   namespace: cemenin
+#   labels:
+#     epc-mode: bsf
+# spec:
+#   selector:
+#     matchLabels:
+#       epc-mode: bsf
+#   endpoints:
+#   - interval: 30s
+#     port: http-open5gs-bsf-9100
+---    
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: open5gs-bsf
+  namespace: cemenin
+  labels:
+    epc-mode: bsf
+    version: 2.6.4
+    app: open5gs-bsf
+spec:
+  selector:
+    matchLabels:
+      epc-mode: bsf
+  template:
+    metadata: 
+      labels:
+        epc-mode: bsf
+        version: 2.6.4
+        app: open5gs-bsf
+    spec:  
+      nodeSelector:
+        nodetype: server
+        kubernetes.io/arch: amd64
+        #kubernetes.io/hostname: molejo
+      containers:
+        # - name: tcpdump-bsf
+        #   imagePullPolicy: Always
+        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/bsf-%F_%H%M.pcap"]
+        #   volumeMounts:
+        #     - name: "dev-net-tun"
+        #       mountPath: "/dev/net/tun" # Needed for VPN
+        #     - name: tcpdump-persistent-storage
+        #       mountPath: /var/tcpdump
+
+        - name: bsf
+          image: maikovisky/open5gs:ubuntu-latest  
+          imagePullPolicy: Always  
+          ports:
+            - containerPort: 80
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN", "SYS_MODULE"]
+
+          volumeMounts:
+            - name: open5gs-bsf-config
+              mountPath: /open5gs/config-map/bsf.yaml
+              subPath: "bsf.yaml"
+            - name: "dev-net-tun"
+              mountPath: "/dev/net/tun" # Needed for VPN
+
+          command: ["open5gs-bsfd", "-c", "/open5gs/config-map/bsf.yaml"]
+
+        # - name: metrics-bsf
+        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   command: ["/bin/prometheus-node-exporter"]
+        #   volumeMounts:
+        #     - name: "dev-net-tun"
+        #       mountPath: "/dev/net/tun" # Needed for VPN
+      volumes:
+        - name: open5gs-bsf-config
+          configMap:
+            name: open5gs-bsf-config
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+
+        - name: tcpdump-persistent-storage
+          persistentVolumeClaim:
+            claimName: open5gs-tcpdump-pv-claim
+        

@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: open5gs-my5grantester
+  namespace: cemenin
+  labels:
+    epc-mode: my5grantester
+spec:
+  selector:
+    epc-mode: my5grantester
+  ports:
+    - name: open5gs-my5grantester-tcp-80
+      protocol: TCP
+      port: 80
+    - name: open5gs-my5grantester-tcp-3000
+      protocol: TCP
+      port: 3000
+    - name: open5gs-my5grantester-tcp-9100
+      protocol: TCP
+      port: 9100
+      targetPort: 9100
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: open5gs-my5grantester
+  namespace: cemenin
+  labels:
+    epc-mode: my5grantester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: my5grantester
+  template:
+    metadata:
+      labels:
+        epc-mode: my5grantester
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: kiss
+      containers:
+        - name: my5grantester
+          image:  carlosmenin/my5grantester:latest
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN"]
+          volumeMounts:
+            - name: open5gs-my5grantester-config
+              mountPath: /my5G-RANTester/config/config.yml
+              subPath: "config.yml"
+
+            - name: "dev-net-tun"
+              mountPath: "/dev/net/tun" # Needed for VPN
+          #command: ["./app load-test-parallel -n $NUM_UEs -d $SLEEP_CONN -t $START_DELAY -a"]
+          #command: ["./app","load-test-division","-n","100","-d","10000","-t","30","-u","5","-i","20","-a"]
+          command: ["./app","load-test-parallel","-n","100","-d","100","-t","30","-a"]
+          #command: ["./app","ue"]
+      volumes:
+        - name: open5gs-my5grantester-config
+          configMap:
+            name: open5gs-my5grantester-config
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: open5gs-my5grantester
+  namespace: cemenin
+  labels:
+    epc-mode: my5grantester
+spec:
+  selector:
+    matchLabels:
+      epc-mode: my5grantester
+  endpoints:
+  - interval: 30s
+    port: open5gs-my5grantester-tcp-9100
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: open5gs-my5grantester-config
+  namespace: cemenin
+  labels:
+    epc-mode: my5grantester
+data:
+  config.yml: |
+    gnodeb:
+      controlif:
+        ip: "0.0.0.0"
+        port: 9487
+      dataif:
+        ip: "0.0.0.0"
+        port: 2152
+      plmnlist:
+        mcc: "999"
+        mnc: "70"
+        tac: "000001"
+        gnbid: "000001"
+      slicesupportlist:
+        sst: "01"
+        sd: "000001"
+
+    ue:
+      msin: "0000000000"
+      key: "465B5CE8B199B49FAA5F0A2EE238A6BC"
+      opc: "E8ED289DEBA952E4283B54E88E6183CA"
+      amf: "8000"
+      sqn: "0000000"
+      dnn: "slice01"
+      hplmn:
+        mcc: "999"
+        mnc: "70"
+      snssai:
+        sst: 1
+        sd: "000001"
+
+    amfif:
+      ip: "open5gs-amf"
+      port: 38412
+
+    logs:
+        level: 4

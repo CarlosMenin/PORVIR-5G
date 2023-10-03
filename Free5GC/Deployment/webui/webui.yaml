@@ -1,0 +1,77 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: free5gc-webui
+  namespace: free5gc
+  labels:
+    epc-mode: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: webui
+  template:
+    metadata:
+      labels:
+        epc-mode: webui
+        app: free5gc-webui
+    spec:
+      nodeSelector:
+        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: whitesnake
+      containers:
+        - name: webui
+          image: free5gc/webui:latest
+          imagePullPolicy: Always
+          command: ["./webui", "-c", "/free5gc/config/webuiConfig.yaml"]
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: config-volume
+              mountPath: /free5gc/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: webui-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webui-config
+  namespace: free5gc
+data:
+  webuiConfig.yaml: |
+    info:
+      version: 1.0.1
+      description: WebUI initial local configuration
+    configuration:
+      mongodb: # the mongodb connected by this webui
+        name: free5gc # name of the mongodb
+        url: mongodb://db:27017 # a valid URL of the mongodb
+      billingServer:
+        hostIPv4: webui
+        listenPort: 2122
+        port: 2121
+        tls:
+          pem: cert/chf.pem
+          key: cert/chf.key
+
+    logger: # log output setting
+      enable: true # true or false
+      level: info # how detailed to output, value: trace, debug, info, warn, error, fatal, panic
+      reportCaller: false # enable the caller report or not, value: true or false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui
+  namespace: free5gc
+spec:
+  selector:
+    epc-mode: webui
+  ports:
+    - name: http-free5gc-webui-5000
+      protocol: TCP
+      port: 5000
+      targetPort: 5000

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: open5gs-pcf-config
+  namespace: cemenin
+  labels:
+    epc-mode: pcf
+data:
+  pcf.yaml: |
+    logger:
+        file: /var/log/open5gs/pcf.log
+
+    db_uri: mongodb://open5gs-mongodb-svc/open5gs
+
+    sbi:
+      server:
+        no_tls: true
+      client:
+        no_tls: true
+
+    pcf:
+      sbi:
+        - addr: 0.0.0.0
+          advertise: open5gs-pcf
+      metrics:
+        - addr: 0.0.0.0
+          port: 9090
+
+    # scp:
+    #   sbi:
+    #     - name: open5gs-scp
+
+    nrf:
+      sbi:
+        - name: open5gs-nrf

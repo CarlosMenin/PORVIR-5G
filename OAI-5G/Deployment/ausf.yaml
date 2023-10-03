@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-ausf
+  namespace: oai-cn5g
+  labels:
+    app: ausf
+spec:
+  selector:
+    matchLabels:
+      app: ausf
+  template:
+    metadata:
+      labels:
+        app: ausf
+    spec:
+      nodeSelector:
+        nodetype: server
+      containers:
+        - name: oai-ausf
+          image: oaisoftwarealliance/oai-ausf:latest
+          ports:
+            - name: http1
+              containerPort: 80
+              protocol: TCP
+            - name: http2
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: TZ
+              value: Europe/Paris
+            - name: AUSF_NAME
+              value: OAI_AUSF
+            - name: SBI_IF_NAME
+              value: eth0
+            - name: USE_FQDN_DNS
+              value: "yes"
+            - name: UDM_IP_ADDRESS
+              value: udm
+            - name: UDM_FQDN
+              value: udm.oai-cn5g.svc.cluster.local
+            - name: UDM_PORT
+              value: "8080"
+            - name: REGISTER_NRF
+              value: "yes"
+            - name: NRF_IPV4_ADDRESS
+              value: nrf
+            - name: NRF_FQDN
+              value: nrf.oai-cn5g.svc.cluster.local
+            - name: USE_HTTP2
+              value: "yes"
+            - name: NRF_PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ausf
+  namespace: oai-cn5g
+spec:
+  selector:
+    app: ausf
+  ports:
+    - name: http1
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: http2
+      protocol: TCP
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,108 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: oai-upf
+  namespace: oai-cn5g
+  labels:
+    app: upf
+spec:
+  selector:
+    matchLabels:
+      app: upf
+  template:
+    metadata:
+      labels:
+        app: upf
+    spec:
+      nodeSelector:
+        nodetype: server
+      containers:
+        - name: oai-upf
+          image: oaisoftwarealliance/oai-spgwu-tiny:latest
+          ports:
+            - name: http2
+              containerPort: 8080
+              protocol: TCP
+            - name: pfcp
+              containerPort: 8805
+              protocol: UDP
+            - name: gtp
+              containerPort: 2152
+              protocol: UDP
+          env:
+            - name: TZ
+              value: Europe/Paris
+            - name: SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP
+              value: eth0
+            - name: SGW_INTERFACE_NAME_FOR_SX
+              value: eth0
+            - name: PGW_INTERFACE_NAME_FOR_SGI
+              value: eth0
+            - name: NETWORK_UE_NAT_OPTION
+              value: "yes"
+            - name: NETWORK_UE_IP
+              value: "12.1.1.0/24"
+            - name: ENABLE_5G_FEATURES
+              value: "yes"
+            - name: REGISTER_NRF
+              value: "yes"
+            - name: USE_FQDN_NRF
+              value: "yes"
+            - name: UPF_FQDN_5G
+              value: upf
+            - name: NRF_IPV4_ADDRESS
+              value: nrf
+            - name: NRF_FQDN
+              value: nrf.oai-cn5g.svc.cluster.local
+            # Mandatory to set the NRF PORT to 8080 (it is set to default to 80 otherwise)
+            - name: HTTP_VERSION
+              value: "2"
+            - name: NRF_PORT
+              value: "8080"
+            # Slice 0 (1, 0xFFFFFF)
+            - name: NSSAI_SST_0
+              value: "1"
+            - name: DNN_0
+              value: oai
+            # Slice 1 (1, 1)
+            - name: NSSAI_SST_1
+              value: "1"
+            - name: NSSAI_SD_1
+              value: "1"
+            - name: DNN_1
+              value: oai.ipv4
+            # Slice 2 (222, 123)
+            - name: NSSAI_SST_2
+              value: "222"
+            - name: NSSAI_SD_2
+              value: "123"
+            - name: DNN_2
+              value: default
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+            privileged: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: upf
+  namespace: oai-cn5g
+spec:
+  selector:
+    app: upf
+  ports:
+    - name: http2
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: pfcp
+      protocol: UDP
+      port: 8805
+      targetPort: 8805
+    - name: gtp
+      protocol: UDP
+      port: 2152
+      targetPort: 2152

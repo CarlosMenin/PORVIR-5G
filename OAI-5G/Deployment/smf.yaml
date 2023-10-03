@@ -1,0 +1,153 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: oai-smf
+  namespace: oai-cn5g
+  labels:
+    app: smf
+spec:
+  selector:
+    matchLabels:
+      app: smf
+  template:
+    metadata:
+      labels:
+        app: smf
+    spec:
+      nodeSelector:
+        nodetype: server
+      containers:
+        - name: oai-smf
+          image: oaisoftwarealliance/oai-smf:latest
+          ports:
+            - name: http1
+              containerPort: 80
+              protocol: TCP
+            - name: http2
+              containerPort: 8080
+              protocol: TCP
+            - name: pfcp
+              containerPort: 8805
+              protocol: UDP
+          env:
+            - name: TZ
+              value: Europe/Paris
+            - name: SMF_INTERFACE_NAME_FOR_N4
+              value: eth0
+            - name: SMF_INTERFACE_NAME_FOR_SBI
+              value: eth0
+            - name: DEFAULT_DNS_IPV4_ADDRESS
+              value: "10.96.0.10"
+            - name: DEFAULT_DNS_SEC_IPV4_ADDRESS
+              value: "8.8.8.8"
+            - name: AMF_IPV4_ADDRESS
+              value: amf
+            - name: AMF_FQDN
+              value: amf.oai-cn5g.svc.cluster.local
+            - name: UDM_IPV4_ADDRESS
+              value: udm
+            - name: UDM_FQDN
+              value: udm.oai-cn5g.svc.cluster.local
+            - name: UPF_IPV4_ADDRESS
+              value: upf
+            - name: UPF_FQDN_0
+              value: upf.oai-cn5g.svc.cluster.local
+            - name: NRF_IPV4_ADDRESS
+              value: nrf
+            - name: NRF_FQDN
+              value: nrf.oai-cn5g.svc.cluster.local
+            - name: USE_LOCAL_SUBSCRIPTION_INFO
+              value: "yes" #Set to yes if SMF uses local subscription information instead of from an UDM
+            - name: REGISTER_NRF
+              value: "yes"
+            - name: DISCOVER_UPF
+              value: "yes"
+            - name: USE_FQDN_DNS
+              value: "yes"
+            # changes for HTTP2
+            - name: HTTP_VERSION
+              value: "2"
+            - name: AMF_PORT
+              value: "8080"
+            - name: UDM_PORT
+              value: "8080"
+            - name: NRF_PORT
+              value: "8080"
+            - name: UE_MTU
+              value: "1500"
+            # Slice 0 (1, 0xFFFFFF)
+            - name: DNN_NI0
+              value: oai
+            - name: TYPE0
+              value: IPv4
+            - name: DNN_RANGE0
+              value: "12.1.1.151 - 12.1.1.253"
+            - name: NSSAI_SST0
+              value: "1"
+            - name: SESSION_AMBR_UL0
+              value: 200Mbps
+            - name: SESSION_AMBR_DL0
+              value: 400Mbps
+            # Slice 1 (1, 1)
+            - name: DNN_NI1
+              value: oai.ipv4
+            - name: TYPE1
+              value: IPv4
+            - name: DNN_RANGE1
+              value: "12.1.1.51 - 12.1.1.150"
+            - name: NSSAI_SST1
+              value: "1"
+            - name: NSSAI_SD1
+              value: "1"
+            - name: SESSION_AMBR_UL1
+              value: 100Mbps
+            - name: SESSION_AMBR_DL1
+              value: 200Mbps
+            # Slice 2 (222, 123)
+            - name: DNN_NI2
+              value: default
+            - name: TYPE2
+              value: IPv4
+            - name: DNN_RANGE2
+              value: "12.1.1.2 - 12.1.1.50"
+            - name: NSSAI_SST2
+              value: "222"
+            - name: NSSAI_SD2
+              value: "123"
+            - name: SESSION_AMBR_UL2
+              value: 50Mbps
+            - name: SESSION_AMBR_DL2
+              value: 100Mbps
+            # Slice 3 for ims
+            - name: DNN_NI3
+              value: ims
+            - name: TYPE3
+              value: IPv4v6
+            - name: DNN_RANGE3
+              value: "14.1.1.2 - 14.1.1.253"
+            - name: DEFAULT_CSCF_IPV4_ADDRESS
+              value: "127.0.0.1"  # only needed when ims is being used
+            - name: ENABLE_USAGE_REPORTING
+              value: "no" # Set yes if UE USAGE REPORTING is to be done at UPF
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smf
+  namespace: oai-cn5g
+spec:
+  selector:
+    app: smf
+  ports:
+    - name: http1
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: http2
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: pfcp
+      protocol: UDP
+      port: 8805
+      targetPort: 8805

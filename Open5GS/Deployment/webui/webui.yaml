@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: open5gs-webui
+  namespace: cemenin
+  labels:
+    epc-mode: webui
+spec:
+  selector:
+    epc-mode: webui
+  ports:
+    - name: http2-open5gs-webui-80
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+    - name: http2-open5gs-webui-3000
+      protocol: TCP
+      port: 3000
+---    
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: open5gs-webui
+  namespace: cemenin
+  labels:
+    epc-mode: webui
+    app: webui
+    version: v2.4.11
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      epc-mode: webui
+      
+  template:
+    metadata:
+#      annotations:
+#        "helm.sh/hook": pre-install    
+      labels:
+        epc-mode: webui
+        app: webui
+        version: v2.4.11
+    spec:  
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: whitesnake
+        nodetype: server
+
+      containers:
+        - name: webui
+          image: maikovisky/open5gs-webui:latest  
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN", "SYS_MODULE"]
+          #imagePullPolicy: {{ .Values.open5gs.image.pullPolicy }}
+          volumeMounts:
+            - name: "dev-net-tun"
+              mountPath: "/dev/net/tun" # Needed for VPN
+          env:
+            - name: DB_URI 
+              value: mongodb://open5gs-mongodb-svc/open5gs
+            - name: HOSTNAME
+              value: 0.0.0.0
+          command: ["npm", "run", "dev"]
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+
