@@ -11,26 +11,26 @@ spec:
     matchLabels:
       epc-mode: udm
   template:
-    metadata:  
+    metadata:
       labels:
         epc-mode: udm
         app: open5gs-udm
         # version: v2.6.1-26
-    spec:  
+    spec:
       nodeSelector:
-        nodetype: server        
+        nodetype: server
         kubernetes.io/arch: amd64
         #kubernetes.io/hostname: molejo
       containers:
         # - name: tcpdump-udm
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/udm-%F_%H%M.pcap"]
         #   volumeMounts:
         #     - name: tcpdump-persistent-storage
         #       mountPath: /var/tcpdump
 
         - name: udm
-          image: maikovisky/open5gs:ubuntu-latest    
+          image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           securityContext:
             privileged: true
@@ -45,7 +45,7 @@ spec:
           command: ["open5gs-udmd", "-c", "/open5gs/config-map/udm.yaml"]
 
         # - name: metrics-udm
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/prometheus-node-exporter"]
       volumes:
         - name: open5gs-udm-config
@@ -55,7 +55,6 @@ spec:
         - name: tcpdump-persistent-storage
           persistentVolumeClaim:
             claimName: open5gs-tcpdump-pv-claim
-
 
 # ---
 # apiVersion: monitoring.coreos.com/v1

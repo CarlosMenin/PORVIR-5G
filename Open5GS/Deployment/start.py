@@ -17,9 +17,9 @@ def aplicar_manifestos_na_pasta(pasta):
         if arquivo.endswith(".yaml"):
             caminho_completo = os.path.join(pasta, arquivo)
             aplicar_manifesto(caminho_completo)
-    time.sleep(30)
+    time.sleep(5)
 
-pastas = ['base', 'mongodb', 'freeDiameter', 'nrf', 'webui', 'amf', 'scp', 'nssf', 'ausf', 'bsf', 'pcf', 'udm', 'udr', 'upf', 'smf', 'iperf']
+pastas = ['base', 'mongodb', 'freeDiameter','webui', 'nrf', 'scp', 'nssf', 'ausf', 'bsf', 'pcf', 'udm', 'udr', 'smf', 'upf', 'amf', 'iperf']
 
 for pasta in pastas:
     aplicar_manifestos_na_pasta(pasta)

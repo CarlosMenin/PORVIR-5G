@@ -17,7 +17,7 @@ spec:
     # - name: http-open5gs-ausf-9100
     #   protocol: TCP
     #   port: 9100
----    
+---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
@@ -33,30 +33,30 @@ spec:
     matchLabels:
       epc-mode: ausf
   template:
-    metadata:    
+    metadata:
       labels:
         epc-mode: ausf
         version: 2.6.4
         app: open5gs-ausf
-    spec:  
+    spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
         #kubernetes.io/hostname: molejo
       containers:
         # - name: metrics-ausf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/prometheus-node-exporter"]
 
         # - name: tcpdump-ausf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/ausf-%F_%H%M.pcap"]
         #   volumeMounts:
         #     - name: tcpdump-persistent-storage
         #       mountPath: /var/tcpdump
 
         - name: ausf
-          image: maikovisky/open5gs:ubuntu-latest  
+          image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -85,7 +85,6 @@ spec:
         - name: tcpdump-persistent-storage
           persistentVolumeClaim:
             claimName: open5gs-tcpdump-pv-claim
-
 # ---
 # apiVersion: monitoring.coreos.com/v1
 # kind: ServiceMonitor

@@ -18,7 +18,7 @@ spec:
     #   protocol: TCP
     #   port: 9100
     #   targetPort: 9100
----    
+---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
@@ -33,26 +33,26 @@ spec:
     matchLabels:
       epc-mode: nssf
   template:
-    metadata:   
+    metadata:
       labels:
         epc-mode: nssf
         app: open5gs-nssf
         # version: v2.6.1-26
-    spec:  
+    spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
         #kubernetes.io/hostname: molejo
       containers:
         # - name: tcpdump-nssf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/nssf-%F_%H%M.pcap"]
         #   volumeMounts:
         #     - name: tcpdump-persistent-storage
         #       mountPath: /var/tcpdump
-        
+
         - name: nssf
-          image: maikovisky/open5gs:ubuntu-latest 
+          image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           securityContext:
             privileged: true
@@ -66,10 +66,9 @@ spec:
           command: ["open5gs-nssfd", "-c", "/open5gs/config-map/nssf.yaml"]
 
         # - name: metrics-nssf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/prometheus-node-exporter"]
 
-          
       volumes:
         - name: open5gs-nssf-config
           configMap:

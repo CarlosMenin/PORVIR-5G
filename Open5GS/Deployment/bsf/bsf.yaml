@@ -32,7 +32,7 @@ spec:
 #   endpoints:
 #   - interval: 30s
 #     port: http-open5gs-bsf-9100
----    
+---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
@@ -47,12 +47,12 @@ spec:
     matchLabels:
       epc-mode: bsf
   template:
-    metadata: 
+    metadata:
       labels:
         epc-mode: bsf
         version: 2.6.4
         app: open5gs-bsf
-    spec:  
+    spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
@@ -60,7 +60,7 @@ spec:
       containers:
         # - name: tcpdump-bsf
         #   imagePullPolicy: Always
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/bsf-%F_%H%M.pcap"]
         #   volumeMounts:
         #     - name: "dev-net-tun"
@@ -69,8 +69,8 @@ spec:
         #       mountPath: /var/tcpdump
 
         - name: bsf
-          image: maikovisky/open5gs:ubuntu-latest  
-          imagePullPolicy: Always  
+          image: maikovisky/open5gs:2.6.4
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           securityContext:
@@ -88,7 +88,7 @@ spec:
           command: ["open5gs-bsfd", "-c", "/open5gs/config-map/bsf.yaml"]
 
         # - name: metrics-bsf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/prometheus-node-exporter"]
         #   volumeMounts:
         #     - name: "dev-net-tun"
@@ -104,4 +104,3 @@ spec:
         - name: tcpdump-persistent-storage
           persistentVolumeClaim:
             claimName: open5gs-tcpdump-pv-claim
-        

@@ -42,7 +42,7 @@ spec:
         kubernetes.io/hostname: kiss
       containers:
         - name: my5grantester
-          image:  carlosmenin/my5grantester:latest
+          image: carlosmenin/my5grantester:latest
           securityContext:
             privileged: true
             capabilities:
@@ -56,8 +56,8 @@ spec:
               mountPath: "/dev/net/tun" # Needed for VPN
           #command: ["./app load-test-parallel -n $NUM_UEs -d $SLEEP_CONN -t $START_DELAY -a"]
           #command: ["./app","load-test-division","-n","100","-d","10000","-t","30","-u","5","-i","20","-a"]
-          command: ["./app","load-test-parallel","-n","100","-d","100","-t","30","-a"]
-          #command: ["./app","ue"]
+          #command: ["./app","load-test-parallel","-n","100","-d","100","-t","30","-a"]
+          command: ["./app", "ue"]
       volumes:
         - name: open5gs-my5grantester-config
           configMap:
@@ -78,8 +78,8 @@ spec:
     matchLabels:
       epc-mode: my5grantester
   endpoints:
-  - interval: 30s
-    port: open5gs-my5grantester-tcp-9100
+    - interval: 30s
+      port: open5gs-my5grantester-tcp-9100
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -112,7 +112,7 @@ data:
       opc: "E8ED289DEBA952E4283B54E88E6183CA"
       amf: "8000"
       sqn: "0000000"
-      dnn: "slice01"
+      dnn: "internet"
       hplmn:
         mcc: "999"
         mnc: "70"

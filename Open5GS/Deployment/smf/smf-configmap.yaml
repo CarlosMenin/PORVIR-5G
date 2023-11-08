@@ -31,10 +31,10 @@ data:
       gtpu:
         - dev: eth0
       subnet:
-        - addr: 192.168.0.1/16
-          dnn: internet
         - addr: 10.41.0.1/16
-          dnn: slice01
+          dnn: internet
+        # - addr: 10.41.0.1/16
+        #   dnn: slice01
       dns:
         - 10.96.0.10
       mtu: 1400
@@ -44,25 +44,21 @@ data:
       info:
         - s_nssai:
           - sst: 1
-            dnn:
-              - internet
-          - sst: 1
             sd: 000001
             dnn:
-              - slice01
+              - internet
 
-        
     nrf:
       sbi:
         - name: open5gs-nrf
-    
+
 
     upf:
       pfcp:
         # - addr: open5gs-upf
         #   dnn: [internet]
         - addr: open5gs-upf-1
-          dnn: [internet, slice01]
+          dnn: [internet]
 
     metrics:
         addr: 0.0.0.0

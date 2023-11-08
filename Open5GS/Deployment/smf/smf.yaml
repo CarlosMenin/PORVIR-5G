@@ -35,7 +35,7 @@ spec:
       protocol: TCP
       port: 9090
       targetPort: 9090
----    
+---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
@@ -50,19 +50,19 @@ spec:
     matchLabels:
       epc-mode: smf
   template:
-    metadata:  
+    metadata:
       labels:
         epc-mode: smf
         app: open5gs-smf
         prometheus: open5gs-monitor
-    spec:  
+    spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
         #kubernetes.io/hostname: molejo
       containers:
         # - name: tcpdump-smf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/smf-%F_%H%M.pcap"]
         #   volumeMounts:
         #     - name: "dev-net-tun"
@@ -71,8 +71,8 @@ spec:
         #       mountPath: /var/tcpdump
 
         - name: smf
-          image: maikovisky/open5gs:ubuntu-latest  
-          imagePullPolicy: Always  
+          image: maikovisky/open5gs:2.6.4
+          imagePullPolicy: Always
           securityContext:
             privileged: true
             capabilities:
@@ -104,16 +104,16 @@ spec:
 
             - name: freediameter-cacert-config
               mountPath: /etc/freeDiameter/cacert.pem
-              subPath: "cacert.pem"            
+              subPath: "cacert.pem"
 
             - name: "dev-net-tun"
               mountPath: "/dev/net/tun" # Needed for VPN
-              
+
           command: ["open5gs-smfd", "-c", "/open5gs/config-map/smf.yaml"]
           #command: ["sleep", "1d"]
 
         # - name: metrics-smf
-        #   image: maikovisky/open5gs:ubuntu-latest    
+        #   image: maikovisky/open5gs:2.6.4
         #   command: ["/bin/prometheus-node-exporter"]
         #   volumeMounts:
         #     - name: "dev-net-tun"
@@ -122,7 +122,7 @@ spec:
         - name: open5gs-smf-config
           configMap:
             name: open5gs-smf-config
-            
+
         - name: freediameter-smf-config
           configMap:
             name: freediameter-smf-config
@@ -134,7 +134,7 @@ spec:
         - name: freediameter-smf-key-config
           configMap:
             name: freediameter-smf-key-config
-        
+
         - name: freediameter-cacert-config
           configMap:
             name: freediameter-cacert-config
@@ -160,5 +160,5 @@ spec:
     matchLabels:
       epc-mode: smf
   endpoints:
-  - interval: 5s
-    port: http-open5gs-smf-tcp-9090
+    - interval: 5s
+      port: http-open5gs-smf-tcp-9090

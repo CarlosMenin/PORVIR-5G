@@ -30,7 +30,7 @@ spec:
     #   protocol: TCP
     #   port: 9100
     #   targetPort: 9100
----    
+---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
@@ -45,19 +45,19 @@ spec:
     matchLabels:
       epc-mode: upf1
   template:
-    metadata:  
+    metadata:
       labels:
         epc-mode: upf1
         app: open5gs-upf
         prometheus: open5gs-monitor
-    spec:  
+    spec:
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/hostname: erasure
       containers:
         # - name: tcpdump-upf1
-        #   image: maikovisky/open5gs:ubuntu-latest
-        #   imagePullPolicy: Always    
+        #   image: maikovisky/open5gs:2.6.4
+        #   imagePullPolicy: Always
         #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/upf1-%F_%H%M.pcap"]
         #   volumeMounts:
         #     - name: "dev-net-tun"
@@ -66,7 +66,7 @@ spec:
         #       mountPath: /var/tcpdump
 
         - name: upf1
-          image: maikovisky/open5gs:ubuntu-latest    
+          image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           securityContext:
             privileged: true
@@ -81,9 +81,8 @@ spec:
             - name: "dev-net-tun"
               mountPath: "/dev/net/tun" # Needed for VPN
 
-           
             - name: open5gs-upf1-config
-              mountPath:  /bin/entrypoint.sh
+              mountPath: /bin/entrypoint.sh
               subPath: entrypoint.sh
 
           #command: ["open5gs-upfd", "-c", "/open5gs/config-map/upf.yaml"]
@@ -115,10 +114,10 @@ spec:
     matchLabels:
       epc-mode: upf1
   endpoints:
-  # - interval: 5s
-  #   port: http-open5gs-upf1-9100
-  - interval: 5s
-    port: http-open5gs-upf1-9090
+    # - interval: 5s
+    #   port: http-open5gs-upf1-9100
+    - interval: 5s
+      port: http-open5gs-upf1-9090
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -131,7 +130,7 @@ data:
   upf.yaml: |-
     logger:
         file: /var/log/open5gs/upf.log
-    
+
     #  <PFCP Server>
     sbi:
       server:
@@ -147,12 +146,12 @@ data:
         - addr: 0.0.0.0
           port: 9090
       subnet:
-        - addr: 192.168.0.1/16
+        - addr: 10.41.0.1/16
           dnn: internet
           dev: ogstun
-        - addr: 10.41.0.1/16
-          dnn: slice01
-          dev: slice01       
+        # - addr: 10.41.0.1/16
+        #   dnn: slice01
+        #   dev: slice01       
     smf:
       pfcp:
         addr: open5gs-smf
@@ -164,12 +163,12 @@ data:
     #echo "Creating net device {{ .dev }}"
     if grep "ogstun" /proc/net/dev > /dev/null; then
       echo "[WARNING] Net device ogstun already exists!"
-      ip addr add 192.168.0.1/16 dev ogstun || true
+      ip addr add 10.41.0.1/16 dev ogstun || true
       ip link set ogstun up
     else 
       echo "[INFO] Create device ogstun!"
       ip tuntap add name ogstun mode tun
-      ip addr add 192.168.0.1/16 dev ogstun || true
+      ip addr add 10.41.0.1/16 dev ogstun || true
       ip link set ogstun up
     fi
 
@@ -178,16 +177,16 @@ data:
     # ip addr add 192.168.0.1/16 dev ogstun 
     # ip link set ogstun up
 
-    if grep "slice01" /proc/net/dev > /dev/null; then
-      echo "[WARNING] Net device slice01 already exists!"
-      ip addr add 10.41.0.1/16 dev slice01 || true
-      ip link set slice01 up
-    else 
-      echo "[INFO] Create device slice01 !"
-      ip tuntap add name slice01 mode tun
-      ip addr add 10.41.0.1/16 dev slice01 || true
-      ip link set slice01 up
-    fi
+    # if grep "slice01" /proc/net/dev > /dev/null; then
+    #   echo "[WARNING] Net device slice01 already exists!"
+    #   ip addr add 10.41.0.1/16 dev slice01 || true
+    #   ip link set slice01 up
+    # else 
+    #   echo "[INFO] Create device slice01 !"
+    #   ip tuntap add name slice01 mode tun
+    #   ip addr add 10.41.0.1/16 dev slice01 || true
+    #   ip link set slice01 up
+    # fi
 
     echo "[INFO] Config sysctl"
     sysctl -w net.ipv4.ip_forward=1
