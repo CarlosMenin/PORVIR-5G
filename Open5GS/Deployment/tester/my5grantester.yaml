@@ -39,32 +39,26 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: kiss
+        kubernetes.io/hostname: petshopboys
       containers:
         - name: my5grantester
           image: carlosmenin/my5grantester:latest
           securityContext:
             privileged: true
             capabilities:
-              add: ["NET_ADMIN"]
+              add: ["NET_ADMIN", "SYS_MODULE"]
           volumeMounts:
             - name: open5gs-my5grantester-config
               mountPath: /my5G-RANTester/config/config.yml
               subPath: "config.yml"
-
-            - name: "dev-net-tun"
-              mountPath: "/dev/net/tun" # Needed for VPN
           #command: ["./app load-test-parallel -n $NUM_UEs -d $SLEEP_CONN -t $START_DELAY -a"]
           #command: ["./app","load-test-division","-n","100","-d","10000","-t","30","-u","5","-i","20","-a"]
           #command: ["./app","load-test-parallel","-n","100","-d","100","-t","30","-a"]
-          command: ["./app", "ue"]
+          command: ["sleep", "1d"]
       volumes:
         - name: open5gs-my5grantester-config
           configMap:
             name: open5gs-my5grantester-config
-        - name: dev-net-tun
-          hostPath:
-            path: /dev/net/tun
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -92,19 +86,20 @@ data:
   config.yml: |
     gnodeb:
       controlif:
-        ip: "0.0.0.0"
+        ip: "open5gs-my5grantester-0"
         port: 9487
       dataif:
-        ip: "0.0.0.0"
+        ip: "open5gs-my5grantester-0"
         port: 2152
       plmnlist:
         mcc: "999"
         mnc: "70"
         tac: "000001"
-        gnbid: "000001"
+        gnbid: "000003"
       slicesupportlist:
         sst: "01"
         sd: "000001"
+      test: "test-normal-registration"
 
     ue:
       msin: "0000000000"
@@ -112,14 +107,22 @@ data:
       opc: "E8ED289DEBA952E4283B54E88E6183CA"
       amf: "8000"
       sqn: "0000000"
-      dnn: "internet"
+      dnn: "default"
       hplmn:
         mcc: "999"
         mnc: "70"
       snssai:
         sst: 1
         sd: "000001"
-
+    integrity:
+      nia0: false
+      nia1: false
+      nia2: true
+    ciphering:
+      nea0: true
+      nea1: false
+      nea2: false
+    test: ""
     amfif:
       ip: "open5gs-amf"
       port: 38412

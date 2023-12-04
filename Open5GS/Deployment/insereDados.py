@@ -3,7 +3,7 @@ from bson import ObjectId
 from bson import Int64
 
 # Conexão com o servidor do MongoDB. Alterar a porta específica do serviço do MongoDB
-client = pymongo.MongoClient("mongodb://localhost:55691/")
+client = pymongo.MongoClient("mongodb://localhost:36045/")
 
 # Acessa a base de dados e seleciona a coleção
 db = client["open5gs"]
@@ -33,7 +33,7 @@ for num_UE in range(qtd_UE):
             "default_indicator" : True,
             "session" : [
                 {
-                    "name" : "internet",
+                    "name" : "default",
                     "type" : int(3),
                     "pcc_rule" : [
 
