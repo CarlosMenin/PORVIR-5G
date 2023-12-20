@@ -16,6 +16,7 @@ spec:
         epc-mode: ausf
         app: free5gc-ausf
     spec:
+      hostname: ausf-pod
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64

@@ -84,6 +84,14 @@ spec:
                 - NET_ADMIN
                 - SYS_MODULE
             privileged: true
+          volumeMounts:
+            - name: "dev-net-tun"
+              mountPath: "/dev/net/tun" # Needed for VPN
+      volumes:
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
+          
 ---
 apiVersion: v1
 kind: Service

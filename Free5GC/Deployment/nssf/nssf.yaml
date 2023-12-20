@@ -16,6 +16,7 @@ spec:
         epc-mode: nssf
         app: free5gc-nssf
     spec:
+      hostname: nssf-pod
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64

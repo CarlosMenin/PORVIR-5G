@@ -16,6 +16,7 @@ spec:
         epc-mode: udr
         app: free5gc-udr
     spec:
+      hostname: udr-pod
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64

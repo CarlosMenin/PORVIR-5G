@@ -113,7 +113,7 @@ spec:
             - name: NSSAI_SST2
               value: "222"
             - name: NSSAI_SD2
-              value: "123"
+              value: "00007b"
             - name: SESSION_AMBR_UL2
               value: 50Mbps
             - name: SESSION_AMBR_DL2
@@ -151,3 +151,7 @@ spec:
       protocol: UDP
       port: 8805
       targetPort: 8805
+    - name: gtp
+      protocol: UDP
+      port: 2152
+      targetPort: 2152

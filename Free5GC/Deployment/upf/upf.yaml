@@ -16,6 +16,7 @@ spec:
         epc-mode: upf
         app: free5gc-upf
     spec:
+      hostname: upf-pod
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
@@ -36,10 +37,15 @@ spec:
               mountPath: /free5gc/config
             - name: iptables-script
               mountPath: /free5gc/script
+            - name: "dev-net-tun"
+              mountPath: "/dev/net/tun" # Needed for VPN
       volumes:
         - name: config-volume
           configMap:
             name: upf-config
+        - name: dev-net-tun
+          hostPath:
+            path: /dev/net/tun
         - name: iptables-script
           configMap:
             name: upf-iptables
@@ -56,7 +62,7 @@ data:
     description: UPF initial local configuration
 
     pfcp:
-      addr: 0.0.0.0
+      addr: upf-pod
       nodeID: upf.free5gc.svc.cluster.local # External IP or FQDN can be reached
       retransTimeout: 1s # retransmission timeout
       maxRetrans: 3 # the max number of retransmission
@@ -72,7 +78,7 @@ data:
     # The DNN list supported by UPF
     dnnList:
       - dnn: internet # Data Network Name
-        cidr: 10.60.0.0/24 # Classless Inter-Domain Routing for assigned IPv4 pool of UE
+        cidr: 60.60.0.0/16 # Classless Inter-Domain Routing for assigned IPv4 pool of UE
         # natifname: eth0
 
     logger: # log output setting
@@ -88,9 +94,14 @@ metadata:
 data:
   upf-iptables.sh: |
 
-    ip tuntap add name gtpif mode tun
-    iptables -t nat -A POSTROUTING -o eth0  -j MASQUERADE
-    iptables -I FORWARD 1 -j ACCEPT
+    ip link set lo up 
+    ip addr add  60.60.0.101 dev lo   
+    ip link set lo up
+
+
+    iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
+
     ./upf -c /free5gc/config/upfConfig.yaml
 ---
 apiVersion: v1
@@ -103,6 +114,10 @@ spec:
     epc-mode: upf
     app: free5gc-upf
   ports:
+    - name: free5gc-upf-udp-2152
+      protocol: UDP
+      port: 2152
+      targetPort: 2152
     - name: http-free5gc-upf-8000
       protocol: TCP
       port: 8000

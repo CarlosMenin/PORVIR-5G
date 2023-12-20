@@ -50,6 +50,7 @@ spec:
         epc-mode: nrf
         app: free5gc-nrf
     spec:
+      hostname: nrf-pod
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64

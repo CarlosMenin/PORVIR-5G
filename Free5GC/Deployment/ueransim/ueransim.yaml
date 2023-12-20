@@ -137,7 +137,7 @@ data:
     # Initial PDU sessions to be established
     sessions:
       - type: 'IPv4'
-        apn: 'internet'
+        apn: 'default'
         slice:
           sst: 0x01
           sd: 0x010203

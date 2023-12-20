@@ -11,7 +11,7 @@ def aplicar_manifesto(caminho_do_arquivo):
     else:
         print(f'Erro ao executar o comando:\n{erro.decode("utf-8")}')
     
-    time.sleep(45)
+    time.sleep(5)
 
 arquivos_manifesto = [
     'nrf.yaml',

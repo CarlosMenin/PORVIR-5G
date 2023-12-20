@@ -16,6 +16,7 @@ spec:
         epc-mode: pcf
         app: free5gc-pcf
     spec:
+      hostname: pcf-pod
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
