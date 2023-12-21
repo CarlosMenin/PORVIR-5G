@@ -18,7 +18,7 @@ spec:
         nodetype: server
       containers:
         - name: oai-udr
-          image: oaisoftwarealliance/oai-udr:latest
+          image: oaisoftwarealliance/oai-udr:v1.5.1
           ports:
             - name: http1
               containerPort: 80

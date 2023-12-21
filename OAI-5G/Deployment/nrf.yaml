@@ -1,4 +1,4 @@
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oai-nrf
@@ -18,7 +18,7 @@ spec:
         nodetype: server
       containers:
         - name: oai-nrf
-          image: oaisoftwarealliance/oai-nrf:latest
+          image: oaisoftwarealliance/oai-nrf:v1.5.1
           #command: ["./nrf", "-c" ,"/free5gc/config/nrfConfig.yaml"]
           ports:
             - name: http1

@@ -18,7 +18,7 @@ spec:
         nodetype: server
       containers:
         - name: oai-ausf
-          image: oaisoftwarealliance/oai-ausf:latest
+          image: oaisoftwarealliance/oai-ausf:v1.5.1
           ports:
             - name: http1
               containerPort: 80

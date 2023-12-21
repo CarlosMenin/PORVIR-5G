@@ -21,7 +21,8 @@ arquivos_manifesto = [
     'ausf.yaml',
     'amf.yaml',
     'smf.yaml',
-    'upf.yaml'
+    'upf.yaml',
+    'iperf.yaml'
 ]
 
 for arquivo in arquivos_manifesto:

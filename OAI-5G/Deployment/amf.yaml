@@ -1,4 +1,4 @@
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oai-amf
@@ -18,7 +18,7 @@ spec:
         nodetype: server
       containers:
         - name: oai-amf
-          image: oaisoftwarealliance/oai-amf:latest
+          image: oaisoftwarealliance/oai-amf:v1.5.1
           ports:
             - name: http1
               containerPort: 80

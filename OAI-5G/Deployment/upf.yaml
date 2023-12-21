@@ -1,4 +1,4 @@
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oai-upf
@@ -18,7 +18,7 @@ spec:
         nodetype: server
       containers:
         - name: oai-upf
-          image: oaisoftwarealliance/oai-spgwu-tiny:latest
+          image: oaisoftwarealliance/oai-spgwu-tiny:v1.5.1
           ports:
             - name: http2
               containerPort: 8080
@@ -91,7 +91,7 @@ spec:
         - name: dev-net-tun
           hostPath:
             path: /dev/net/tun
-          
+
 ---
 apiVersion: v1
 kind: Service

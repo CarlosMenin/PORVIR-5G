@@ -47,7 +47,7 @@ spec:
             - name: SD
               value: "00007b"
             - name: MSIN
-              value: "00000000031"
+              value: "0000000031"
             - name: OPC
               value: 63bfa50ee6523365ff14c1f45f88737d
             - name: KEY
@@ -61,11 +61,11 @@ spec:
             - name: TEST
               value: parallel
             - name: NUM_UE
-              value: "20"
+              value: "1"
             - name: DELAY
               value: "1000"
             - name: TIME
-              value: "30"
+              value: "10"
           securityContext:
             capabilities:
               add:
