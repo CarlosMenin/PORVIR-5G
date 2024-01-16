@@ -88,9 +88,9 @@ data:
       locality: area1 # Name of the location where a set of AMF, SMF, PCF and UPFs are located
       pfcp: # the IP address of N4 interface on this SMF (PFCP)
         # addr config is deprecated in smf config v1.0.3, please use the following config
-        nodeID: smf-pod # the Node ID of this SMF
-        listenAddr: smf-pod
-        externalAddr: smf-pod # the IP/FQDN of N4 interface on this SMF (PFCP)
+        nodeID: smf.free5gc.svc.cluster.local # the Node ID of this SMF
+        listenAddr: 0.0.0.0
+        externalAddr: smf.free5gc.svc.cluster.local # the IP/FQDN of N4 interface on this SMF (PFCP)
       userplaneInformation: # list of userplane information
         upNodes: # information of userplane node (AN or UPF)
           gNB1: # the name of the node

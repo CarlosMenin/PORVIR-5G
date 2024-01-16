@@ -43,30 +43,57 @@ spec:
       containers:
         - name: my5grantester
           image:  carlosmenin/my5grantester:latest
+          env:
+            - name: NGAP_LOCAL_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: GTPU_LOCAL_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MCC
+              value: "208"
+            - name: MNC
+              value: "93"
+            - name: TAC
+              value: "000001"
+            - name: GNBID
+              value: "000001"
+            - name: SST_GNB
+              value: "01"
+            - name: SD
+              value: "010203"
+            - name: MSIN
+              value: "0000000000"
+            - name: KEY
+              value: 8baf473f2f8fd09487cccbd7097c6862
+            - name: OPC
+              value: 8e27b6af0e692e750f32667a3b14605d
+            - name: AMF
+              value: "8000"
+            - name: SQN
+              value: "000000000023"
+            - name: DNN
+              value: internet
+            - name: SST_UE
+              value: "01"
+            - name: TEST
+              value: parallel
+            - name: NUM_UE
+              value: "1"
+            - name: DELAY
+              value: "1000"
+            - name: TIME
+              value: "10"
+            - name: NGAP_REMOTE_ADDR
+              value: amf.free5gc.svc.cluster.local
           securityContext:
-            privileged: true
             capabilities:
-              add: ["NET_ADMIN"]
-          volumeMounts:
-            - name: free5gc-my5grantester-config
-              mountPath: /my5G-RANTester/config/config.yml
-              subPath: "config.yml"
-
-            - name: "dev-net-tun"
-              mountPath: "/dev/net/tun" # Needed for VPN
-          #command: ["./app load-test-parallel -n $NUM_UEs -d $SLEEP_CONN -t $START_DELAY -a"]
-          #command: ["./app","load-test-division","-n","100","-d","10000","-t","30","-u","5","-i","20","-a"]
-          #command: ["./app","load-test-parallel","-n","100","-d","100","-t","30","-a"]
-          #command: ["./app","load-test-decrement","-n","100","-d","2000","-t","30","-u","190","-i","10","-a"]
-          #command: ["./app","ue"]
-          command: ["sleep","1d"]
-      volumes:
-        - name: free5gc-my5grantester-config
-          configMap:
-            name: free5gc-my5grantester-config
-        - name: dev-net-tun
-          hostPath:
-            path: /dev/net/tun
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+            privileged: true
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -83,58 +110,3 @@ spec:
   - interval: 30s
     port: free5gc-my5grantester-tcp-9100
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: free5gc-my5grantester-config
-  namespace: free5gc
-  labels:
-    epc-mode: my5grantester
-data:
-  config.yml: |
-    gnodeb:
-      controlif:
-        ip: "free5gc-my5grantester-0"
-        port: 9487
-      dataif:
-        ip: "free5gc-my5grantester-0"
-        port: 2152
-      plmnlist:
-        mcc: "208"
-        mnc: "93"
-        tac: "000001"
-        gnbid: "000001"
-      slicesupportlist:
-        sst: "01"
-        sd: "010203"
-      test: "test-normal-registration"
-
-    ue:
-      msin: "0000000001"
-      key: "8baf473f2f8fd09487cccbd7097c6862"
-      opc: "8e27b6af0e692e750f32667a3b14605d"
-      amf: "8000"
-      sqn: "000000000023"
-      dnn: "internet"
-      hplmn:
-        mcc: "208"
-        mnc: "93"
-      snssai:
-        sst: 1
-        sd: "010203"
-      integrity:
-        nia0: false
-        nia1: false
-        nia2: true
-      ciphering:
-        nea0: true
-        nea1: false
-        nea2: false
-      test: ""
-
-    amfif:
-      ip: "amf.free5gc.svc.cluster.local"
-      port: 38412
-
-    logs:
-        level: 4
