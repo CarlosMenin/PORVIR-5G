@@ -10,14 +10,6 @@ spec:
   selector:
     epc-mode: iperf
   ports:
-    - name: f5g-iperf-5201
-      protocol: TCP
-      port: 5201
-      targetPort: 5201
-    - name: f5g-ipf-u-5201
-      protocol: UDP
-      port: 5201
-      targetPort: 5201
     - name: f5g-iperf-5001
       protocol: TCP
       port: 5001
@@ -30,7 +22,6 @@ spec:
       protocol: TCP
       port: 9100
       targetPort: 9100
-
 ---    
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -53,30 +44,10 @@ spec:
       nodeSelector:
         kubernetes.io/arch: amd64
         kubernetes.io/hostname: whitesnake
-      containers:       
-        - name: tcpdump-iperf
-          image: maikovisky/open5gs:ubuntu-latest    
-          command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/iperf-%F_%H%M.pcap"]
-          volumeMounts:
-            - name: tcpdump-persistent-storage
-              mountPath: /var/tcpdump
+      containers: 
 
-        - name: iperf3
-          image: maikovisky/iperf:latest  
-          ports:
-            - containerPort: 5201
-              name: f5g-iperf-5201
-            - containerPort: 5201
-              name: f5g-ipf-u-5201
-              protocol: UDP
-          securityContext:
-            privileged: true
-            capabilities:
-              add: ["NET_ADMIN", "SYS_MODULE"]  
-          command: ["/bin/iperf3", "-s", "-B", "0.0.0.0", "-V", "--forceflush"]
-     
         - name: iperf
-          image: maikovisky/iperf:latest  
+          image: mlabbe/iperf:latest  
           ports:
             - containerPort: 5001
               name: f5g-iperf-5001
@@ -84,31 +55,5 @@ spec:
             privileged: true
             capabilities:
               add: ["NET_ADMIN", "SYS_MODULE"]  
-          command: ["/bin/iperf", "-s", "--histograms"]
-        
-        # - name: metrics-iperf
-        #   image: maikovisky/iperf:latest  
-        #   command: ["/bin/prometheus-node-exporter", "--collector.disable-defaults","--collector.arp","--collector.netclass" ,"--collector.netdev" ,"--collector.netstat" ,"--collector.udp_queues","--collector.ipvs","--collector.cpu","--collector.cpufreq","--collector.meminfo"]
-        #   ports:
-        #     - containerPort: 9100
-        #       name: f5g-iperf-9100
-      volumes:
-        - name: tcpdump-persistent-storage
-          persistentVolumeClaim:
-            claimName: free5gc-tcpdump-pv-claim
-
-# ---
-# apiVersion: monitoring.coreos.com/v1
-# kind: ServiceMonitor
-# metadata:
-#   name: open5gs-iperf
-#   namespace: free5gc
-#   labels:
-#     epc-mode: iperf
-# spec:
-#   selector:
-#     matchLabels:
-#       epc-mode: iperf
-#   endpoints:
-#   - interval: 10s
-#     port: f5g-iperf-9100
+          #command: ["/bin/iperf", "-s", "--histograms"]
+          command: ["iperf","-s","-p","5001"]

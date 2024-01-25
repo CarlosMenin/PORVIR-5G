@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: free5gc-my5grantester
+  name: my5grantester
   namespace: free5gc
   labels:
     epc-mode: my5grantester
@@ -28,7 +28,7 @@ metadata:
   labels:
     epc-mode: my5grantester
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       epc-mode: my5grantester
