@@ -28,7 +28,7 @@ metadata:
   labels:
     epc-mode: my5grantester
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       epc-mode: my5grantester
@@ -39,7 +39,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: petshopboys
+        kubernetes.io/hostname: whitesnake
       containers:
         - name: my5grantester
           image: carlosmenin/my5grantester:latest

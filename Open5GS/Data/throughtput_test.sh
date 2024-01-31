@@ -1,3 +1,14 @@
+cd Deployment
+python3 start.py
+
+kubectl port-forward deployment/open5gs-mongodb 63145:27017 --namespace cemenin &
+PORT_FORWARD_PID=$!
+
+python3 insereDados.py
+kill $PORT_FORWARD_PID
+
+cd ../Data
+
 echo "Run throughtput tests"
 for e in $(seq 1 16); do
     for c in 1 1; do

@@ -53,7 +53,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: petshopboys
+        kubernetes.io/hostname: whitesnake
       containers:
         # - name: tcpdump-upf1
         #   image: maikovisky/open5gs:2.6.4
