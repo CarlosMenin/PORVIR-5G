@@ -1,6 +1,20 @@
+cd Deployment
+python3 start.py
 
+kubectl port-forward deployment/free5gc-mongodb 63145:27017 --namespace free5gc &
+PORT_FORWARD_PID=$!
 
-kubectl port-forward deployment/free5gc-mongodb :27017 --namespace free5gc
+cd Database
+
+py_names=("policyData.ues.amData.py" "policyData.ues.qosFlow" "policyData.ues.smData" "subscriptionData.authenticationData.authenticationSubscription" "subscriptionData.provisionedData.amData" "subscriptionData.provisionedData.smData" "subscriptionData.provisionedData.smfSelectionSubscriptionData")
+
+for arq_name in "${py_names[@]}"; do
+    python3 "$arq_name"
+done
+
+kill $PORT_FORWARD_PID
+
+cd ../../Data
 
 echo "Run throughtput tests"
 echo "Run core 1 tests (exec)"
@@ -10,7 +24,7 @@ for i in 1 2 4 6 8 10; do
     kubectl scale --replicas=$i statefulsets free5gc-my5grantester --namespace free5gc
 
     echo "Waiting connections for experiment $i"
-    sleep $((1*90))
+    sleep $((100))
 
     echo "Starting experiment $i"
     for j in $(seq 0 $(($i - 1))); do
