@@ -23,7 +23,7 @@ spec:
         kubernetes.io/hostname: whitesnake
       containers:
         - name: upf
-          image: free5gc/upf:latest
+          image: free5gc/upf:v3.3.0
           imagePullPolicy: Always
           command: ["bash","-c","/free5gc/script/upf-iptables.sh"]
           ports:
@@ -34,7 +34,7 @@ spec:
               add: ["NET_ADMIN", "SYS_MODULE"]
           volumeMounts:
             - name: config-volume
-              mountPath: /free5gc/config
+              mountPath: /configuracoes
             - name: iptables-script
               mountPath: /free5gc/script
             - name: "dev-net-tun"
@@ -102,7 +102,7 @@ data:
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
 
-    ./upf -c /free5gc/config/upfConfig.yaml
+    ./upf -c /configuracoes/upfConfig.yaml
 ---
 apiVersion: v1
 kind: Service

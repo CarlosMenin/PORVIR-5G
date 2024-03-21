@@ -22,4 +22,4 @@ def aplicar_manifestos_na_pasta(pasta):
 pastas = ['upf', 'mongo', 'nrf', 'amf', 'ausf', 'nssf', 'pcf', 'smf', 'udm', 'udr', 'webui','iperf','tester']
 
 for pasta in pastas:
-    aplicar_manifestos_na_pasta(pasta)
+    aplicar_manifestos_na_pasta("Deployment/"+pasta)

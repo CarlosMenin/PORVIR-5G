@@ -43,7 +43,7 @@ spec:
     spec:  
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        #kubernetes.io/hostname: whitesnake
       containers: 
 
         - name: iperf

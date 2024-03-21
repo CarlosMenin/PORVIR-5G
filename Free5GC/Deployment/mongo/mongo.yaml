@@ -28,7 +28,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        #kubernetes.io/hostname: whitesnake
         nodetype: server
       containers:
       - image: free5gmano/nextepc-mongodb
@@ -50,7 +50,7 @@ metadata:
   name: free5gc-mongodb-pv-claim
   namespace: free5gc
 spec:
-  storageClassName: rook-cephfs
+  storageClassName: rook-ceph-fs-simple
   accessModes:
     - ReadWriteMany
   resources:

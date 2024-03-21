@@ -20,23 +20,24 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        #kubernetes.io/hostname: whitesnake
       containers:
         - name: smf
-          image: free5gc/smf:latest
+          image: free5gc/smf:v3.3.0
           imagePullPolicy: Always
-          command: ["./smf", "-c", "/free5gc/config/smfConfig.yaml", "-u", "/free5gc/ue/ueRouting.yaml"]
+          command: ["./smf", "-c", "/configuracoes/smfConfig.yaml", "-u", "/free5gc/ue/ueRouting.yaml"]
           ports:
             - containerPort: 8000
           volumeMounts:
             - name: config-volume
-              mountPath: /free5gc/config
+              mountPath: /configuracoes
             - name: config-ueransim
               mountPath: /free5gc/ue
       volumes:
         - name: config-volume
           configMap:
             name: smf-config
+            defaultMode: 0777
         - name: config-ueransim
           configMap:
             name: ue-routing-info

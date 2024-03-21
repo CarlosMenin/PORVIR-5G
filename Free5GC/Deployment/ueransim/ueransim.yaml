@@ -19,10 +19,10 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        #kubernetes.io/hostname: whitesnake
       containers:
         - name: ueransim
-          image: free5gc/ueransim:latest
+          image: free5gc/ueransim:v3.3.0
           imagePullPolicy: Always
           command: ["bash","-c","/free5gc/script/start.sh"]
           #command: ["./nr-gnb", "-c", "/free5gc/gnb/gnbConfig.yaml"]
@@ -34,7 +34,7 @@ spec:
               add: ["NET_ADMIN", "SYS_MODULE"]
           volumeMounts:
             - name: config-volume
-              mountPath: /free5gc/config
+              mountPath: /configuracoes
             - name: gnb-volume
               mountPath: /free5gc/gnb
             - name: gnb-start
@@ -86,7 +86,7 @@ metadata:
   namespace: free5gc
 data:
   start.sh: |
-    sed "s/HOSTNAME/$HOSTNAME/g" /free5gc/config/ueConfig.yaml > /free5gc/ueConfig-1.yaml
+    sed "s/HOSTNAME/$HOSTNAME/g" /configuracoes/ueConfig.yaml > /free5gc/ueConfig-1.yaml
     sed "s/HOSTNAME/$HOSTNAME/g" /free5gc/gnb/gnbConfig.yaml > /free5gc/gnbConfig-1.yaml
     ./nr-gnb -c /free5gc/gnbConfig-1.yaml
 ---

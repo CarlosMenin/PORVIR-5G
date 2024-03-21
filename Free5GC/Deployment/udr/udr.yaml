@@ -20,21 +20,22 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        #kubernetes.io/hostname: whitesnake
       containers:
         - name: udr
-          image: free5gc/udr:latest
+          image: free5gc/udr:v3.3.0
           imagePullPolicy: Always
-          command: ["./udr", "-c", "/free5gc/config/udrConfig.yaml"]
+          command: ["./udr", "-c", "/configuracoes/udrConfig.yaml"]
           ports:
             - containerPort: 8000
           volumeMounts:
             - name: config-volume
-              mountPath: /free5gc/config
+              mountPath: /configuracoes
       volumes:
         - name: config-volume
           configMap:
             name: udr-config
+            defaultMode: 0777
 ---
 apiVersion: v1
 kind: ConfigMap

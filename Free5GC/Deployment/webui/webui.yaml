@@ -19,21 +19,22 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        #kubernetes.io/hostname: whitesnake
       containers:
         - name: webui
-          image: free5gc/webui:latest
+          image: free5gc/webui:v3.3.0
           imagePullPolicy: Always
-          command: ["./webui", "-c", "/free5gc/config/webuiConfig.yaml"]
+          command: ["./webui", "-c", "/configuracoes/webuiConfig.yaml"]
           ports:
             - containerPort: 5000
           volumeMounts:
             - name: config-volume
-              mountPath: /free5gc/config
+              mountPath: /configuracoes
       volumes:
         - name: config-volume
           configMap:
             name: webui-config
+            defaultMode: 0777
 ---
 apiVersion: v1
 kind: ConfigMap
