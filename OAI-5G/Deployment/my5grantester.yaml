@@ -17,6 +17,8 @@ spec:
     spec:
       nodeSelector:
         nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: whitesnake
       containers:
         - name: oai-my5grantester
           image: carlosmenin/my5grantester:latest
@@ -27,7 +29,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: NGAP_REMOTE_ADDR
-              value: amf
+              value: oai-amf
             - name: GTPU_LOCAL_ADDR
               valueFrom:
                 fieldRef:
@@ -41,7 +43,7 @@ spec:
             - name: GNBID
               value: "000003"
             - name: SST_GNB
-              value: "de"
+              value: de
             - name: SST_UE
               value: "222"
             - name: SD
@@ -49,13 +51,13 @@ spec:
             - name: MSIN
               value: "0000000031"
             - name: OPC
-              value: 63bfa50ee6523365ff14c1f45f88737d
+              value: C42449363BBAD02B66D16BC975D77CC1
             - name: KEY
-              value: 0C0A34601D4F07677303652C0462535B
+              value: fec86ba6eb707ed08905757b1bb44b8f
             - name: AMF
               value: "8000"
             - name: SQN
-              value: "0000000"
+              value: "000000000020"
             - name: DNN
               value: default
             - name: TEST
@@ -65,9 +67,48 @@ spec:
             - name: DELAY
               value: "1000"
             - name: TIME
-              value: "10"
+              value: "20"
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
+                - SYS_MODULE
             privileged: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: oai-my5grantester
+  namespace: cemenin
+  labels:
+    epc-mode: my5grantester
+spec:
+  selector:
+    matchLabels:
+      epc-mode: my5grantester
+  endpoints:
+    - interval: 30s
+      port: oai-my5grantester-tcp-9100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  oai-my5grantester
+  namespace: oai-cn5g
+  labels:
+    epc-mode: my5grantester
+spec:
+  selector:
+    epc-mode: my5grantester
+  ports:
+    - name: oai-my5grantester-tcp-80
+      protocol: TCP
+      port: 80
+    - name: oai-my5grantester-tcp-3000
+      protocol: TCP
+      port: 3000
+    - name: oai-my5grantester-tcp-9100
+      protocol: TCP
+      port: 9100
+      targetPort: 9100
+---

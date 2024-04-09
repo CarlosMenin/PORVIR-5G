@@ -4,7 +4,7 @@ metadata:
   name: oai-tcpdump-pv-claim
   namespace: oai-cn5g
 spec:
-  storageClassName: rook-cephfs
+  storageClassName: rook-ceph-fs-simple
   accessModes:
     - ReadWriteMany
   resources:
