@@ -9,11 +9,11 @@ spec:
   selector:
     epc-mode: webui
   ports:
-    - name: http2-open5gs-webui-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 3000
-    - name: http2-open5gs-webui-3000
+    - name: tcp-3000
       protocol: TCP
       port: 3000
 ---    
@@ -48,7 +48,14 @@ spec:
 
       containers:
         - name: webui
-          image: maikovisky/open5gs-webui:latest  
+          image: maikovisky/open5gs-webui:latest
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
+            - name: tcp-3000
+              protocol: TCP
+              containerPort: 3000  
           securityContext:
             privileged: true
             capabilities:

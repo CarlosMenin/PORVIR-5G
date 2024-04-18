@@ -4,7 +4,7 @@ metadata:
   name: open5gs-tcpdump-pv-claim
   namespace: cemenin
 spec:
-  storageClassName: rook-cephfs
+  storageClassName: rook-ceph-fs-simple
   accessModes:
     - ReadWriteMany
   resources:

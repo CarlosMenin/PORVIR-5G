@@ -33,9 +33,15 @@ spec:
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
-            - containerPort: 38412
-            - containerPort: 9090
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
+            - name: sctp-38412
+              protocol: SCTP
+              containerPort: 38412
+            - name: tcp-9090
+              protocol: TCP
+              containerPort: 9090
           securityContext:
             privileged: true
             capabilities:
@@ -47,7 +53,6 @@ spec:
             limits:
               memory: "250Mi"
               cpu: "200m"
-
           volumeMounts:
             - name: open5gs-amf-config
               mountPath: /open5gs/config-map/amf.yaml
@@ -132,14 +137,14 @@ spec:
   selector:
     epc-mode: amf
   ports:
-    - name: http2-open5gs-amf-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
-    - name: http-open5gs-amf-9090
+    - name: tcp-9090
       protocol: TCP
       port: 9090
-    - name: sctp-open5gs-amf-38412
+    - name: sctp-38412
       protocol: SCTP
       targetPort: 38412
       port: 38412

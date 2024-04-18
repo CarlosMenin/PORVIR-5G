@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-base_filename = 'my5grantester-iperf-{}-{}-{}.csv'
+base_filename = 'teste/my5grantester-iperf-1-{}-{}-{}.csv'
 execs = [ 1, 2, 4, 6, 8, 10 ]
 cores = [1]
 cores_name = ['Open5GS']

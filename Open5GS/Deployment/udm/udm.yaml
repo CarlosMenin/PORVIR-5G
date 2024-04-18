@@ -15,6 +15,7 @@ spec:
       labels:
         epc-mode: udm
         app: open5gs-udm
+        version: 2.6.4
         # version: v2.6.1-26
     spec:
       nodeSelector:
@@ -32,6 +33,10 @@ spec:
         - name: udm
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
           securityContext:
             privileged: true
             capabilities:
@@ -84,7 +89,7 @@ spec:
   selector:
     epc-mode: udm
   ports:
-    - name: http2-open5gs-udm-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80

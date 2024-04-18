@@ -10,12 +10,14 @@ spec:
   selector:
     epc-mode: pcf
   ports:
-    - name: http2-open5gs-pcf-80
+    - name: tcp-80
       protocol: TCP
       port: 80
-    - name: http-open5gs-pcf-9090
+      targetPort: 80
+    - name: tcp-9090
       protocol: TCP
       port: 9090
+      targetPort: 9090
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -24,7 +26,6 @@ metadata:
   namespace: cemenin
   labels:
     epc-mode: pcf
-
 spec:
   replicas: 1
   selector:
@@ -36,6 +37,7 @@ spec:
         epc-mode: pcf
         app: open5gs-pcf
         prometheus: open5gs-monitor
+        version: 2.6.4
     spec:
       nodeSelector:
         nodetype: server
@@ -52,6 +54,13 @@ spec:
         - name: pcf
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
+            - name: tcp-9090
+              protocol: TCP
+              containerPort: 9090
           securityContext:
             privileged: true
             capabilities:

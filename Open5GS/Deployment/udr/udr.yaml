@@ -10,7 +10,7 @@ spec:
   selector:
     epc-mode: udr
   ports:
-    - name: http2-open5gs-udr-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -36,6 +36,7 @@ spec:
       labels:
         epc-mode: udr
         app: open5gs-udr
+        version: 2.6.4
         # version: v2.6.1-26
 
     spec:
@@ -54,6 +55,10 @@ spec:
         - name: udr
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
           securityContext:
             privileged: true
             capabilities:

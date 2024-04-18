@@ -5,17 +5,18 @@ metadata:
   namespace: cemenin
   labels:
     epc-mode: my5grantester
+    prometheus: open5gs-monitor
 spec:
   selector:
     epc-mode: my5grantester
   ports:
-    - name: open5gs-my5grantester-tcp-80
+    - name: tcp-80
       protocol: TCP
       port: 80
-    - name: open5gs-my5grantester-tcp-3000
+    - name: tcp-3000
       protocol: TCP
       port: 3000
-    - name: open5gs-my5grantester-tcp-9100
+    - name: tcp-9100
       protocol: TCP
       port: 9100
       targetPort: 9100
@@ -27,6 +28,7 @@ metadata:
   namespace: cemenin
   labels:
     epc-mode: my5grantester
+    prometheus: open5gs-monitor
 spec:
   replicas: 0
   selector:
@@ -36,6 +38,8 @@ spec:
     metadata:
       labels:
         epc-mode: my5grantester
+        version: 2.6.4
+        app: open5gs-my5grantester
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
@@ -43,6 +47,16 @@ spec:
       containers:
         - name: my5grantester
           image: carlosmenin/my5grantester:latest
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
+            - name: tcp-3000
+              protocol: TCP
+              containerPort: 3000
+            - name: tcp-9100
+              protocol: TCP
+              containerPort: 9100
           env:
             - name: NGAP_LOCAL_ADDR
               valueFrom:

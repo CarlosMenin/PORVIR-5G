@@ -10,7 +10,7 @@ spec:
   selector:
     epc-mode: bsf
   ports:
-    - name: http-open5gs-bsf-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80

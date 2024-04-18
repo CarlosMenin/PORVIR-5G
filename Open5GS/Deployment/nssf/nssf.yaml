@@ -10,7 +10,7 @@ spec:
   selector:
     epc-mode: nssf
   ports:
-    - name: http2-open5gs-nssf-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -37,6 +37,7 @@ spec:
       labels:
         epc-mode: nssf
         app: open5gs-nssf
+        version: 2.6.4
         # version: v2.6.1-26
     spec:
       nodeSelector:
@@ -54,6 +55,10 @@ spec:
         - name: nssf
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
           securityContext:
             privileged: true
             capabilities:

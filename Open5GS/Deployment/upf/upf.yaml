@@ -5,24 +5,24 @@ metadata:
   namespace: cemenin
   labels:
     epc-mode: upf1
-    promotheus: open5gs-monitor
+    prometheus: open5gs-monitor
 spec:
   selector:
     epc-mode: upf1
   ports:
-    - name: http2-open5gs-upf1-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
-    - name: http-open5gs-upf1-9090
+    - name: tcp-9090
       protocol: TCP
       port: 9090
       targetPort: 9090
-    - name: open5gs-upf1-udp-2152
+    - name: udp-2152
       protocol: UDP
       port: 2152
       targetPort: 2152
-    - name: open5gs-upf1-udp-8805
+    - name: udp-8805
       protocol: UDP
       port: 8805
       targetPort: 8805
@@ -38,7 +38,7 @@ metadata:
   namespace: cemenin
   labels:
     epc-mode: upf1
-    promotheus: open5gs-monitor
+    prometheus: open5gs-monitor
 spec:
   replicas: 1
   selector:
@@ -50,6 +50,7 @@ spec:
         epc-mode: upf1
         app: open5gs-upf
         prometheus: open5gs-monitor
+        version: 2.6.4
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
@@ -68,6 +69,19 @@ spec:
         - name: upf1
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
+          ports:
+            - name: tcp-80
+              protocol: TCP
+              containerPort: 80
+            - name: tcp-9090
+              protocol: TCP
+              containerPort: 9090
+            - name: udp-2152
+              protocol: UDP
+              containerPort: 2152
+            - name: udp-8805
+              protocol: UDP
+              containerPort: 8805
           securityContext:
             privileged: true
             capabilities:

@@ -10,7 +10,7 @@ spec:
   selector:
     epc-mode: ausf
   ports:
-    - name: http2-open5gs-ausf-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80

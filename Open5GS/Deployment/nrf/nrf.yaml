@@ -11,7 +11,7 @@ spec:
     epc-mode: nrf
   #type: LoadBalancer
   ports:
-    - name: http2-open5gs-nrf-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
