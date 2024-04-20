@@ -15,6 +15,8 @@ spec:
       labels:
         epc-mode: upf
         app: free5gc-upf
+        version: v3.3.0
+        prometheus: free5gc-monitor
     spec:
       hostname: upf-pod
       nodeSelector:
@@ -27,7 +29,18 @@ spec:
           imagePullPolicy: Always
           command: ["bash","-c","/free5gc/script/upf-iptables.sh"]
           ports:
-            - containerPort: 8000
+            - name: tcp-8000
+              protocol: TCP
+              containerPort: 8000
+            - name: tcp-15090
+              protocol: TCP
+              containerPort: 15090
+            - name: udp-2152
+              protocol: UDP
+              containerPort: 2152
+            - name: udp-8805
+              protocol: UDP
+              containerPort: 8805
           securityContext:
             privileged: true
             capabilities:
@@ -114,15 +127,35 @@ spec:
     epc-mode: upf
     app: free5gc-upf
   ports:
-    - name: free5gc-upf-udp-2152
+    - name: udp-2152
       protocol: UDP
       port: 2152
       targetPort: 2152
-    - name: http-free5gc-upf-8000
+    - name: tcp-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
-    - name: pfcp-free5gc-upf-8805
+    - name: udp-8805
       protocol: UDP
       port: 8805
       targetPort: 8805
+    - name: tcp-15090
+      protocol: TCP
+      port: 15090
+      targetPort: 15090
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: free5gc-upf
+  namespace: free5gc
+  labels:
+    epc-mode: upf
+spec:
+  selector:
+    matchLabels:
+      epc-mode: upf
+  endpoints:
+  - interval: 30s
+    port: tcp-15090
+---

@@ -15,6 +15,8 @@ spec:
       labels:
         epc-mode: webui
         app: free5gc-webui
+        version: v3.3.0
+        prometheus: free5gc-monitor
     spec:
       nodeSelector:
         nodetype: server
@@ -26,7 +28,9 @@ spec:
           imagePullPolicy: Always
           command: ["./webui", "-c", "/configuracoes/webuiConfig.yaml"]
           ports:
-            - containerPort: 5000
+            - name: tcp-5000
+              protocol: TCP
+              containerPort: 5000
           volumeMounts:
             - name: config-volume
               mountPath: /configuracoes
@@ -72,7 +76,7 @@ spec:
   selector:
     epc-mode: webui
   ports:
-    - name: http-free5gc-webui-5000
+    - name: tcp-5000
       protocol: TCP
       port: 5000
       targetPort: 5000

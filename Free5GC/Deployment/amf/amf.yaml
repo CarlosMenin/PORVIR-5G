@@ -15,6 +15,8 @@ spec:
       labels:
         epc-mode: amf
         app: free5gc-amf
+        version: v3.3.0
+        prometheus: free5gc-monitor
     spec:
       hostname: amf-pod
       nodeSelector:
@@ -27,7 +29,15 @@ spec:
           imagePullPolicy: Always
           command: ["./amf", "-c" ,"/configuracoes/amfConfig.yaml"]
           ports:
-            - containerPort: 8000
+            - name: tcp-8000
+              protocol: TCP
+              containerPort: 8000
+            - name: sctp-38412
+              protocol: SCTP
+              containerPort: 38412
+            - name: tcp-15090
+              protocol: TCP
+              containerPort: 15090
           volumeMounts:
             - name: config-volume
               mountPath: /configuracoes
@@ -168,11 +178,31 @@ spec:
     epc-mode: amf
     app: free5gc-amf
   ports:
-    - name: http-free5gc-amf-8000
+    - name: tcp-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
-    - name: sctp-free5gc-amf-38412
+    - name: sctp-38412
       protocol: SCTP
       port: 38412
       targetPort: 38412
+    - name: tcp-15090
+      protocol: TCP
+      port: 15090
+      targetPort: 15090
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: free5gc-amf
+  namespace: free5gc
+  labels:
+    epc-mode: amf
+spec:
+  selector:
+    matchLabels:
+      epc-mode: amf
+  endpoints:
+  - interval: 30s
+    port: tcp-15090
+---

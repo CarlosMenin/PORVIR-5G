@@ -15,6 +15,8 @@ spec:
       labels:
         epc-mode: udr
         app: free5gc-udr
+        version: v3.3.0
+        prometheus: free5gc-monitor
     spec:
       hostname: udr-pod
       nodeSelector:
@@ -27,7 +29,12 @@ spec:
           imagePullPolicy: Always
           command: ["./udr", "-c", "/configuracoes/udrConfig.yaml"]
           ports:
-            - containerPort: 8000
+            - name: tcp-8000
+              protocol: TCP
+              containerPort: 8000
+            - name: tcp-15090
+              protocol: TCP
+              containerPort: 15090
           volumeMounts:
             - name: config-volume
               mountPath: /configuracoes
@@ -76,7 +83,27 @@ spec:
     epc-mode: udr
     app: free5gc-udr
   ports:
-    - name: http-free5gc-udr-8000
+    - name: tcp-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
+    - name: tcp-15090
+      protocol: TCP
+      port: 15090
+      targetPort: 15090
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: free5gc-udr
+  namespace: free5gc
+  labels:
+    epc-mode: udr
+spec:
+  selector:
+    matchLabels:
+      epc-mode: udr
+  endpoints:
+  - interval: 30s
+    port: tcp-15090
+---

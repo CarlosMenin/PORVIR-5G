@@ -9,16 +9,16 @@ spec:
   selector:
     epc-mode: my5grantester
   ports:
-    - name: free5gc-my5grantester-tcp-80
+    - name: tcp-8000
       protocol: TCP
-      port: 80
-    - name: free5gc-my5grantester-tcp-3000
+      port: 8000
+    - name: tcp-3000
       protocol: TCP
       port: 3000
-    - name: free5gc-my5grantester-tcp-9100
+    - name: tcp-15090
       protocol: TCP
-      port: 9100
-      targetPort: 9100
+      port: 15090
+      targetPort: 15090
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -36,6 +36,9 @@ spec:
     metadata:
       labels:
         epc-mode: my5grantester
+        version: v2.6.4
+        prometheus: free5gc-monitor
+        app: free5gc-my5grantester
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
@@ -43,6 +46,16 @@ spec:
       containers:
         - name: my5grantester
           image:  carlosmenin/my5grantester:latest
+          ports:
+            - name: tcp-8000
+              protocol: TCP
+              containerPort: 8000
+            - name: tcp-3000
+              protocol: TCP
+              containerPort: 3000
+            - name: tcp-15090
+              protocol: TCP
+              containerPort: 15090
           env:
             - name: NGAP_LOCAL_ADDR
               valueFrom:
@@ -108,5 +121,5 @@ spec:
       epc-mode: my5grantester
   endpoints:
   - interval: 30s
-    port: free5gc-my5grantester-tcp-9100
+    port: tcp-15090
 ---
