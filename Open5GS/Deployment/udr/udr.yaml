@@ -10,13 +10,10 @@ spec:
   selector:
     epc-mode: udr
   ports:
-    - name: tcp-80
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80
-    # - name: http-open5gs-udr-9100
-    #   protocol: TCP
-    #   port: 9100
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -25,7 +22,6 @@ metadata:
   namespace: cemenin
   labels:
     epc-mode: udr
-
 spec:
   replicas: 1
   selector:
@@ -37,26 +33,16 @@ spec:
         epc-mode: udr
         app: open5gs-udr
         version: 2.6.4
-        # version: v2.6.1-26
-
     spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        #kubernetes.io/hostname: molejo
       containers:
-        # - name: tcpdump-udr
-        #   image: maikovisky/open5gs:2.6.4
-        #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/udr-%F_%H%M.pcap"]
-        #   volumeMounts:
-        #     - name: tcpdump-persistent-storage
-        #       mountPath: /var/tcpdump
-
         - name: udr
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           ports:
-            - name: tcp-80
+            - name: http2-80
               protocol: TCP
               containerPort: 80
           securityContext:
@@ -75,11 +61,7 @@ spec:
             - name: open5gs-udr-config
               mountPath: /open5gs/config-map/udr.yaml
               subPath: "udr.yaml"
-
           command: ["open5gs-udrd", "-c", "/open5gs/config-map/udr.yaml"]
-        # - name: metrics-udr
-        #   image: maikovisky/open5gs:2.6.4
-        #   command: ["/bin/prometheus-node-exporter"]
       volumes:
         - name: open5gs-udr-config
           configMap:
@@ -88,18 +70,3 @@ spec:
         - name: tcpdump-persistent-storage
           persistentVolumeClaim:
             claimName: open5gs-tcpdump-pv-claim
-# ---
-# apiVersion: monitoring.coreos.com/v1
-# kind: ServiceMonitor
-# metadata:
-#   name: open5gs-udr
-#   namespace: cemenin
-#   labels:
-#     epc-mode: udr
-# spec:
-#   selector:
-#     matchLabels:
-#       epc-mode: udr
-#   endpoints:
-#   - interval: 30s
-#     port: http-open5gs-udr-9100

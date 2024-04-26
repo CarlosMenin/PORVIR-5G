@@ -10,14 +10,10 @@ spec:
   selector:
     epc-mode: pcf
   ports:
-    - name: tcp-80
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80
-    - name: tcp-9090
-      protocol: TCP
-      port: 9090
-      targetPort: 9090
 ---
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -42,49 +38,30 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        #kubernetes.io/hostname: molejo
       containers:
-        # - name: tcpdump-pcf
-        #   image: maikovisky/open5gs:2.6.4
-        #   command: ["/bin/tcpdump", "-i", "eth0", "-s", "65535", "-G", "3600", "-w", "/var/tcpdump/pcf-%F_%H%M.pcap"]
-        #   volumeMounts:
-        #     - name: tcpdump-persistent-storage
-        #       mountPath: /var/tcpdump
-
         - name: pcf
           image: maikovisky/open5gs:2.6.4
           imagePullPolicy: Always
           ports:
-            - name: tcp-80
+            - name: http2-80
               protocol: TCP
               containerPort: 80
-            - name: tcp-9090
-              protocol: TCP
-              containerPort: 9090
           securityContext:
             privileged: true
             capabilities:
               add: ["NET_ADMIN", "SYS_MODULE"]
-
           volumeMounts:
             - name: open5gs-pcf-config
               mountPath: /open5gs/config-map/pcf.yaml
               subPath: "pcf.yaml"
-
           command: ["open5gs-pcfd", "-c", "/open5gs/config-map/pcf.yaml"]
-
-        # - name: metrics-pcf
-        #   image: maikovisky/open5gs:2.6.4
-        #   command: ["/bin/prometheus-node-exporter"]
       volumes:
         - name: open5gs-pcf-config
           configMap:
             name: open5gs-pcf-config
-
         - name: tcpdump-persistent-storage
           persistentVolumeClaim:
             claimName: open5gs-tcpdump-pv-claim
-
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -99,4 +76,4 @@ spec:
       epc-mode: pcf
   endpoints:
     - interval: 5s
-      port: http-open5gs-pcf-9090
+      port: http2-open5gs-pcf-9090
