@@ -3,7 +3,7 @@ import mysql.connector
 # Conexão com o servidor MySQL. Altere as credenciais conforme necessário.
 conn = mysql.connector.connect(
     host="localhost",
-    port=37499,
+    port=36285,
     user="test",
     password="test",
     database="oai_db"

@@ -4,24 +4,27 @@ metadata:
   name: oai-nrf
   namespace: oai-cn5g
   labels:
-    app: nrf
+    epc-mode: nrf
 spec:
   selector:
     matchLabels:
-      app: nrf
+      epc-mode: nrf
   template:
     metadata:
       labels:
-        app: nrf
+        epc-mode: nrf
+        prometheus: oai-monitor
+        version: 2.6.4
+        app: oai-nrf
     spec:
       nodeSelector:
         nodetype: server
       containers:
-        - name: oai-nrf
+        - name: nrf
           image: oaisoftwarealliance/oai-nrf:v2.0.1
           command: ["/openair-nrf/bin/oai_nrf", "-c", "/configuracoes/nrfConfig.yaml", "-o"]
           ports:
-            - name: sbi
+            - name: http2-80
               containerPort: 80
               protocol: TCP
           env:
@@ -43,9 +46,10 @@ metadata:
   namespace: oai-cn5g
 spec:
   selector:
-    app: nrf
+    epc-mode: nrf
+    app: oai-nrf
   ports:
-    - name: sbi
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80

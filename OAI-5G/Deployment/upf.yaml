@@ -4,15 +4,18 @@ metadata:
   name: oai-upf
   namespace: oai-cn5g
   labels:
-    app: upf
+    app: oai-upf
 spec:
   selector:
     matchLabels:
-      app: upf
+      app: oai-upf
   template:
     metadata:
       labels:
-        app: upf
+        app: oai-upf
+        epc-mode: oai-upf
+        prometheus: oai-monitor
+        version: 2.6.4
     spec:
       hostname: upf-pod
       nodeSelector:
@@ -24,14 +27,14 @@ spec:
           image: oaisoftwarealliance/oai-upf:v2.0.1
           command: ["bash","-c","/oaicn5g/script/upf-iptables.sh"]
           ports:
-            - name: sbi
+            - name: http2-80
               containerPort: 80
               protocol: TCP
-            - name: n4
-              containerPort: 8805
-              protocol: UDP
-            - name: n3
+            - name: udp-2152
               containerPort: 2152
+              protocol: UDP
+            - name: udp-8805
+              containerPort: 8805
               protocol: UDP
           env:
             - name: TZ
@@ -69,20 +72,20 @@ metadata:
   namespace: oai-cn5g
 spec:
   selector:
-    app: upf
+    app: oai-upf
   ports:
-    - name: sbi
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80
-    - name: n4
-      protocol: UDP
-      port: 8805
-      targetPort: 8805
-    - name: n3
+    - name: udp-2152
       protocol: UDP
       port: 2152
       targetPort: 2152
+    - name: udp-8805
+      protocol: UDP
+      port: 8805
+      targetPort: 8805
 ---
   apiVersion: v1
   kind: ConfigMap

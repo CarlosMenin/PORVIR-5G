@@ -4,15 +4,18 @@ metadata:
   name: oai-udm
   namespace: oai-cn5g
   labels:
-    app: udm
+    app: oai-udm
 spec:
   selector:
     matchLabels:
-      app: udm
+      app: oai-udm
   template:
     metadata:
       labels:
-        app: udm
+        app: oai-udm
+        epc-mode: oai-udm
+        prometheus: oai-monitor
+        version: 2.6.4
     spec:
       nodeSelector:
         nodetype: server
@@ -21,7 +24,7 @@ spec:
           image: oaisoftwarealliance/oai-udm:v2.0.1
           command: ["/openair-udm/bin/oai_udm", "-c" , "/configuracoes/udmConfig.yaml", "-o"]
           ports:
-            - name: sbi
+            - name: http2-80
               containerPort: 80
               protocol: TCP
           env:
@@ -43,9 +46,9 @@ metadata:
   namespace: oai-cn5g
 spec:
   selector:
-    app: udm
+    app: oai-udm
   ports:
-    - name: sbi
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80

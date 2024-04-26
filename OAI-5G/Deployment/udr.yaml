@@ -4,24 +4,27 @@ metadata:
   name: oai-udr
   namespace: oai-cn5g
   labels:
-    app: udr
+    epc-mode: udr
 spec:
   selector:
     matchLabels:
-      app: udr
+      epc-mode: udr
   template:
     metadata:
       labels:
-        app: udr
+        app: oai-udr
+        epc-mode: udr
+        prometheus: oai-monitor
+        version: 2.6.4
     spec:
       nodeSelector:
         nodetype: server
       containers:
-        - name: oai-udr
+        - name: udr
           image: oaisoftwarealliance/oai-udr:v2.0.1
           command: ["/openair-udr/bin/oai_udr", "-c", "/configuracoes/udrConfig.yaml", "-o"]
           ports:
-            - name: sbi
+            - name: http2-80
               containerPort: 80
               protocol: TCP
           env:
@@ -43,9 +46,10 @@ metadata:
   namespace: oai-cn5g
 spec:
   selector:
-    app: udr
+    app: oai-udr
+    epc-mode: udr
   ports:
-    - name: sbi
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -131,7 +135,7 @@ data:
 
     #### Common for UDR and AMF
     database:
-      host: mysql
+      host: oai-mysql
       user: test
       type: mysql
       password: test

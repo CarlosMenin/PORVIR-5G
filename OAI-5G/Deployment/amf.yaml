@@ -4,15 +4,18 @@ metadata:
   name: oai-amf
   namespace: oai-cn5g
   labels:
-    app: amf
+    app: oai-amf
 spec:
   selector:
     matchLabels:
-      app: amf
+      app: oai-amf
   template:
     metadata:
       labels:
-        app: amf
+        app: oai-amf
+        epc-mode: oai-amf
+        prometheus: oai-monitor
+        version: 2.6.4
     spec:
       nodeSelector:
         nodetype: server
@@ -21,10 +24,10 @@ spec:
           image: oaisoftwarealliance/oai-amf:v2.0.1
           command: ["/openair-amf/bin/oai_amf", "-c", "/configuracoes/amfConfig.yaml", "-o"]
           ports:
-            - name: sbi
+            - name: http2-80
               containerPort: 80
               protocol: TCP
-            - name: n2
+            - name: sctp-38412
               containerPort: 38412
               protocol: SCTP
           env:
@@ -46,13 +49,13 @@ metadata:
   namespace: oai-cn5g
 spec:
   selector:
-    app: amf
+    app: oai-amf
   ports:
-    - name: sbi
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80
-    - name: n2
+    - name: sctp-38412
       protocol: SCTP
       port: 38412
       targetPort: 38412

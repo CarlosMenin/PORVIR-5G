@@ -4,15 +4,18 @@ metadata:
   name: oai-ausf
   namespace: oai-cn5g
   labels:
-    app: ausf
+    app: oai-ausf
 spec:
   selector:
     matchLabels:
-      app: ausf
+      app: oai-ausf
   template:
     metadata:
       labels:
-        app: ausf
+        app: oai-ausf
+        epc-mode: oai-ausf
+        prometheus: oai-monitor
+        version: 2.6.4
     spec:
       nodeSelector:
         nodetype: server
@@ -21,7 +24,7 @@ spec:
           image: oaisoftwarealliance/oai-ausf:v2.0.1
           command: ["/openair-ausf/bin/oai_ausf", "-c" , "/configuracoes/ausfConfig.yaml", "-o"]
           ports:
-            - name: sbi
+            - name: http2-80
               containerPort: 80
               protocol: TCP
           env:
@@ -43,9 +46,9 @@ metadata:
   namespace: oai-cn5g
 spec:
   selector:
-    app: ausf
+    app: oai-ausf
   ports:
-    - name: sbi
+    - name: http2-80
       protocol: TCP
       port: 80
       targetPort: 80
