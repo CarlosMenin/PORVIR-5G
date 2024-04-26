@@ -29,12 +29,9 @@ spec:
           imagePullPolicy: Always
           command: ["./ausf", "-c", "/configuracoes/ausfConfig.yaml"]
           ports:
-            - name: tcp-8000
+            - name: http2-8000
               protocol: TCP
               containerPort: 8000
-            - name: tcp-15090
-              protocol: TCP
-              containerPort: 15090
           volumeMounts:
             - name: config-volume
               mountPath: /configuracoes
@@ -90,27 +87,8 @@ spec:
     epc-mode: ausf
     app: free5gc-ausf
   ports:
-    - name: tcp-8000
+    - name: http2-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
-    - name: tcp-15090
-      protocol: TCP
-      port: 15090
-      targetPort: 15090
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: free5gc-ausf
-  namespace: free5gc
-  labels:
-    epc-mode: ausf
-spec:
-  selector:
-    matchLabels:
-      epc-mode: ausf
-  endpoints:
-  - interval: 30s
-    port: tcp-15090
 ---

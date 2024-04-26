@@ -29,12 +29,9 @@ spec:
           imagePullPolicy: Always
           command: ["./smf", "-c", "/configuracoes/smfConfig.yaml", "-u", "/free5gc/ue/ueRouting.yaml"]
           ports:
-            - name: tcp-8000
+            - name: http2-8000
               protocol: TCP
               containerPort: 8000
-            - name: tcp-15090
-              protocol: TCP
-              containerPort: 15090
             - name: udp-2152
               protocol: UDP
               containerPort: 2152
@@ -215,7 +212,7 @@ spec:
       protocol: UDP
       port: 2152
       targetPort: 2152
-    - name: tcp-8000
+    - name: http2-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
@@ -223,10 +220,6 @@ spec:
       protocol: UDP
       port: 8805
       targetPort: 8805
-    - name: tcp-15090
-      protocol: TCP
-      port: 15090
-      targetPort: 15090
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -241,5 +234,5 @@ spec:
       epc-mode: smf
   endpoints:
   - interval: 30s
-    port: tcp-15090
+    port: http2-15090
 ---

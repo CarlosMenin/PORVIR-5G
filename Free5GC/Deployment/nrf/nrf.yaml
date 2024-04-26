@@ -63,12 +63,9 @@ spec:
           imagePullPolicy: Always
           command: ["./nrf", "-c", "/configuracoes/nrfConfig.yaml"]
           ports:
-            - name: tcp-8000
+            - name: http2-8000
               protocol: TCP
               containerPort: 8000
-            - name: tcp-15090
-              protocol: TCP
-              containerPort: 15090
           volumeMounts:
             - name: config-volume
               mountPath: /configuracoes
@@ -88,14 +85,10 @@ spec:
     epc-mode: nrf
     app: free5gc-nrf
   ports:
-    - name: tcp-8000
+    - name: http2-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
-    - name: tcp-15090
-      protocol: TCP
-      port: 15090
-      targetPort: 15090
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -103,12 +96,12 @@ metadata:
   name: free5gc-nrf
   namespace: free5gc
   labels:
-    epc-mode: nrf
+    app: free5gc-nrf
 spec:
   selector:
     matchLabels:
-      epc-mode: nrf
+      app: free5gc-nrf
   endpoints:
   - interval: 30s
-    port: tcp-15090
+    port: http2-15090
 ---

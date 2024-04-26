@@ -29,12 +29,9 @@ spec:
           imagePullPolicy: Always
           command: ["bash","-c","/free5gc/script/upf-iptables.sh"]
           ports:
-            - name: tcp-8000
+            - name: http2-8000
               protocol: TCP
               containerPort: 8000
-            - name: tcp-15090
-              protocol: TCP
-              containerPort: 15090
             - name: udp-2152
               protocol: UDP
               containerPort: 2152
@@ -131,7 +128,7 @@ spec:
       protocol: UDP
       port: 2152
       targetPort: 2152
-    - name: tcp-8000
+    - name: http2-8000
       protocol: TCP
       port: 8000
       targetPort: 8000
@@ -139,23 +136,4 @@ spec:
       protocol: UDP
       port: 8805
       targetPort: 8805
-    - name: tcp-15090
-      protocol: TCP
-      port: 15090
-      targetPort: 15090
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: free5gc-upf
-  namespace: free5gc
-  labels:
-    epc-mode: upf
-spec:
-  selector:
-    matchLabels:
-      epc-mode: upf
-  endpoints:
-  - interval: 30s
-    port: tcp-15090
 ---

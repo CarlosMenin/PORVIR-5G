@@ -28,7 +28,7 @@ spec:
           imagePullPolicy: Always
           command: ["./webui", "-c", "/configuracoes/webuiConfig.yaml"]
           ports:
-            - name: tcp-5000
+            - name: http2-5000
               protocol: TCP
               containerPort: 5000
           volumeMounts:
@@ -76,7 +76,7 @@ spec:
   selector:
     epc-mode: webui
   ports:
-    - name: tcp-5000
+    - name: http2-5000
       protocol: TCP
       port: 5000
       targetPort: 5000
