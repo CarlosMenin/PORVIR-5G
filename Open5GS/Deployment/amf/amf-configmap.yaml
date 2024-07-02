@@ -12,6 +12,10 @@ data:
     logger:
         # level: debug
         file: /var/log/open5gs/amf.log
+    
+    global:
+      max:
+        ue: 1500
 
     sbi:
       server:

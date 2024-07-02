@@ -19,7 +19,7 @@ def aplicar_manifestos_na_pasta(pasta):
             aplicar_manifesto(caminho_completo)
     time.sleep(5)
 
-pastas = ['base', 'mongodb', 'freeDiameter','webui', 'nrf', 'ausf', 'udr', 'udm', 'pcf', 'bsf', 'nssf', 'smf', 'upf', 'amf','iperf','tester']
+pastas = ['base', 'mongodb', 'freeDiameter','webui', 'nrf', 'ausf', 'udr', 'udm', 'pcf', 'bsf', 'nssf', 'smf', 'upf', 'amf','iperf']
 
 for pasta in pastas:
     aplicar_manifestos_na_pasta(pasta)

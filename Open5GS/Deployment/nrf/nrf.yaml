@@ -40,7 +40,7 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        #kubernetes.io/hostname: molejo
+        kubernetes.io/hostname: metallica
       containers:
         - name: tcpdump-nrf
           image: maikovisky/open5gs:2.6.4

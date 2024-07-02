@@ -20,6 +20,7 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: udm
           image: maikovisky/open5gs:2.6.4
