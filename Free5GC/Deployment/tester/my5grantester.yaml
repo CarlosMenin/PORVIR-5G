@@ -20,7 +20,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        kubernetes.io/hostname: acdc
       containers:
         - name: my5grantester
           image:  carlosmenin/my5grantester:latest
@@ -64,15 +64,19 @@ spec:
             - name: SST_UE
               value: "01"
             - name: TEST
-              value: parallel
+              value: $TEST
             - name: NUM_UE
-              value: "100"
+              value: "$NUM_UE"
             - name: DELAY
-              value: "1000"
+              value: "$DELAY"
             - name: TIME
-              value: "10"
+              value: "60"
             - name: NGAP_REMOTE_ADDR
               value: amf.free5gc.svc.cluster.local
+            - name: INTERVAL
+              value: "$INTERVAL"
+            - name: CONSTANT
+              value: "$CONSTANT"
           securityContext:
             capabilities:
               add:
@@ -80,4 +84,3 @@ spec:
                 - SYS_MODULE
             privileged: true
 ---
-

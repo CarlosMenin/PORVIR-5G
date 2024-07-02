@@ -22,7 +22,7 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        #kubernetes.io/hostname: whitesnake
+        kubernetes.io/hostname: metallica
       containers:
         - name: nssf
           image: free5gc/nssf:v3.3.0

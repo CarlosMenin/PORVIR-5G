@@ -19,7 +19,7 @@ spec:
       nodeSelector:
         nodetype: server
         kubernetes.io/arch: amd64
-        #kubernetes.io/hostname: whitesnake
+        kubernetes.io/hostname: metallica
       containers:
         - name: n3iwf
           image: free5gc/n3iwf:v3.3.0
