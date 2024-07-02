@@ -18,13 +18,14 @@ spec:
         version: 2.6.4
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: oai-smf
           image: oaisoftwarealliance/oai-smf:v2.0.1
           command: ["/openair-smf/bin/oai_smf", "-c", "/configuracoes/smfConfig.yaml", "-o"]
           ports:
-            - name: http2-80
+            - name: tcp-80
               containerPort: 80
               protocol: TCP
             - name: udp-8805
@@ -51,7 +52,7 @@ spec:
   selector:
     app: oai-smf
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -89,7 +90,7 @@ data:
           interface_name: eth0
           port: 38412
       smf:
-        host: oai-smf
+        host: 0.0.0.0
         sbi:
           port: 80
           api_version: v1
@@ -259,7 +260,7 @@ data:
         enable_snat: yes           # If "on": Source natting is done for UE, DEFAULT= off
       remote_n6_gw: localhost      # Dummy host since simple-switch does not use N6 GW
       smfs:
-        - host: oai-smf            # To be used for PFCP association in case of no-NRF
+        - host: 0.0.0.0            # To be used for PFCP association in case of no-NRF
       upf_info:
         sNssaiUpfInfoList:
           - sNssai: *embb_slice1

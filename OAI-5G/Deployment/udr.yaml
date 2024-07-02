@@ -18,13 +18,14 @@ spec:
         version: 2.6.4
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: udr
           image: oaisoftwarealliance/oai-udr:v2.0.1
           command: ["/openair-udr/bin/oai_udr", "-c", "/configuracoes/udrConfig.yaml", "-o"]
           ports:
-            - name: http2-80
+            - name: tcp-80
               containerPort: 80
               protocol: TCP
           env:
@@ -49,7 +50,7 @@ spec:
     app: oai-udr
     epc-mode: udr
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -115,7 +116,7 @@ data:
           api_version: v1
           interface_name: eth0
       udr:
-        host: oai-udr
+        host: 0.0.0.0
         sbi:
           port: 80
           api_version: v1

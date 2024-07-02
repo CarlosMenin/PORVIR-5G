@@ -19,23 +19,22 @@ spec:
     spec:
       hostname: upf-pod
       nodeSelector:
-        nodetype: server
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: whitesnake
+        kubernetes.io/hostname: metallica
       containers:
         - name: oai-upf
           image: oaisoftwarealliance/oai-upf:v2.0.1
           command: ["bash","-c","/oaicn5g/script/upf-iptables.sh"]
           ports:
-            - name: http2-80
-              containerPort: 80
+            - name: tcp-80
               protocol: TCP
+              containerPort: 80
             - name: udp-2152
+              protocol: UDP
               containerPort: 2152
-              protocol: UDP
             - name: udp-8805
-              containerPort: 8805
               protocol: UDP
+              containerPort: 8805
           env:
             - name: TZ
               value: Europe/Paris
@@ -74,7 +73,7 @@ spec:
   selector:
     app: oai-upf
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -125,7 +124,7 @@ spec:
             interface_name: eth0
             port: 8805
         upf:
-          host: oai-upf
+          host: 0.0.0.0
           sbi:
             port: 80
             api_version: v1
@@ -235,7 +234,7 @@ spec:
           use_local_pcc_rules: yes # Use infos from local_pcc_rules or from PCF
         # we resolve from NRF, this is just to configure usage_reporting
         upfs:
-          - host: oai-upf
+          - host: 0.0.0.0
             config:
               enable_usage_reporting: no
         ue_dns:

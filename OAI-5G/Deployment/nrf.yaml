@@ -13,20 +13,21 @@ spec:
     metadata:
       labels:
         epc-mode: nrf
-        prometheus: oai-monitor
+        promotheus: oai-monitor
         version: 2.6.4
         app: oai-nrf
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: nrf
           image: oaisoftwarealliance/oai-nrf:v2.0.1
           command: ["/openair-nrf/bin/oai_nrf", "-c", "/configuracoes/nrfConfig.yaml", "-o"]
           ports:
-            - name: http2-80
-              containerPort: 80
+            - name: tcp-80
               protocol: TCP
+              containerPort: 80
           env:
             - name: TZ
               value: Europe/Paris
@@ -49,7 +50,7 @@ spec:
     epc-mode: nrf
     app: oai-nrf
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -127,7 +128,7 @@ spec:
             api_version: v1
             interface_name: eth0
         nrf:
-          host: oai-nrf
+          host: 0.0.0.0
           sbi:
             port: 80
             api_version: v1

@@ -14,22 +14,23 @@ spec:
       labels:
         app: oai-amf
         epc-mode: oai-amf
-        prometheus: oai-monitor
+        promotheus: oai-monitor
         version: 2.6.4
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: oai-amf
           image: oaisoftwarealliance/oai-amf:v2.0.1
           command: ["/openair-amf/bin/oai_amf", "-c", "/configuracoes/amfConfig.yaml", "-o"]
           ports:
-            - name: http2-80
-              containerPort: 80
+            - name: tcp-80
               protocol: TCP
+              containerPort: 80
             - name: sctp-38412
-              containerPort: 38412
               protocol: SCTP
+              containerPort: 38412
           env:
             - name: TZ
               value: Europe/paris
@@ -51,7 +52,7 @@ spec:
   selector:
     app: oai-amf
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -80,7 +81,7 @@ data:
     ### Each NF takes its local SBI interfaces and remote interfaces from here, unless it gets them using NRF discovery mechanisms
     nfs:
       amf:
-        host: oai-amf
+        host: 0.0.0.0
         sbi:
           port: 80
           api_version: v1

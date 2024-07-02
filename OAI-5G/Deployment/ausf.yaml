@@ -14,19 +14,20 @@ spec:
       labels:
         app: oai-ausf
         epc-mode: oai-ausf
-        prometheus: oai-monitor
+        promotheus: oai-monitor
         version: 2.6.4
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: oai-ausf
           image: oaisoftwarealliance/oai-ausf:v2.0.1
           command: ["/openair-ausf/bin/oai_ausf", "-c" , "/configuracoes/ausfConfig.yaml", "-o"]
           ports:
-            - name: http2-80
-              containerPort: 80
+            - name: tcp-80
               protocol: TCP
+              containerPort: 80
           env:
             - name: TZ
               value: Europe/Paris
@@ -48,7 +49,7 @@ spec:
   selector:
     app: oai-ausf
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -120,7 +121,7 @@ data:
           api_version: v1
           interface_name: eth0
       ausf:
-        host: oai-ausf
+        host: 0.0.0.0
         sbi:
           port: 80
           api_version: v1

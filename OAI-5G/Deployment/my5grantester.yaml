@@ -19,7 +19,8 @@ spec:
         version: 2.6.4
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
         kubernetes.io/arch: amd64
         kubernetes.io/hostname: whitesnake
       containers:

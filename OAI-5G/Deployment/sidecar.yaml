@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: oai-cn5g
+  namespace: oai-cn5g
+spec:
+  ingress:
+  - port:
+      number: 80
+      protocol: HTTP
+      name: http
+    defaultEndpoint: 127.0.0.1:80

@@ -10,7 +10,7 @@ spec:
   selector:
     epc-mode: iperf
   ports:
-    - name: http2-5001
+    - name: tcp-5001
       protocol: TCP
       port: 5001
       targetPort: 5001
@@ -45,7 +45,7 @@ spec:
         - name: iperf
           image: mlabbe/iperf:latest  
           ports:
-            - name: http2-5001
+            - name: tcp-5001
               protocol: TCP
               containerPort: 5001
             - name: udp-5001

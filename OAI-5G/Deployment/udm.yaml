@@ -14,19 +14,20 @@ spec:
       labels:
         app: oai-udm
         epc-mode: oai-udm
-        prometheus: oai-monitor
+        promotheus: oai-monitor
         version: 2.6.4
     spec:
       nodeSelector:
-        nodetype: server
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: metallica
       containers:
         - name: oai-udm
           image: oaisoftwarealliance/oai-udm:v2.0.1
           command: ["/openair-udm/bin/oai_udm", "-c" , "/configuracoes/udmConfig.yaml", "-o"]
           ports:
-            - name: http2-80
-              containerPort: 80
+            - name: tcp-80
               protocol: TCP
+              containerPort: 80
           env:
             - name: TZ
               value: Europe/Paris
@@ -48,7 +49,7 @@ spec:
   selector:
     app: oai-udm
   ports:
-    - name: http2-80
+    - name: tcp-80
       protocol: TCP
       port: 80
       targetPort: 80
@@ -108,7 +109,7 @@ data:
           interface_name: eth0
           port: 2152
       udm:
-        host: oai-udm
+        host: 0.0.0.0
         sbi:
           port: 80
           api_version: v1
