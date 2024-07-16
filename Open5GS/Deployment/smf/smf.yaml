@@ -57,7 +57,7 @@ spec:
         kubernetes.io/hostname: metallica
       containers:
         - name: smf
-          image: maikovisky/open5gs:2.6.4
+          image: gradiant/open5gs:2.7.1
           imagePullPolicy: Always
           ports:
             - name: http2-80

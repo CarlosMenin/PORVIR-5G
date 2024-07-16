@@ -41,7 +41,7 @@ spec:
         kubernetes.io/hostname: metallica
       containers:
         - name: bsf
-          image: maikovisky/open5gs:2.6.4
+          image: gradiant/open5gs:2.7.1
           imagePullPolicy: Always
           ports:
             - name: http2-80
@@ -62,7 +62,7 @@ spec:
           command: ["open5gs-bsfd", "-c", "/open5gs/config-map/bsf.yaml"]
 
         # - name: metrics-bsf
-        #   image: maikovisky/open5gs:2.6.4
+        #   image: gradiant/open5gs:2.7.1
         #   command: ["/bin/prometheus-node-exporter"]
         #   volumeMounts:
         #     - name: "dev-net-tun"

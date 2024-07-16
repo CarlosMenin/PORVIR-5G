@@ -8,7 +8,14 @@ metadata:
 data:
   udm.yaml: |
     logger:
-        file: /var/log/open5gs/udm.log
+      path:
+        file: /opt/open5gs/var/log/open5gs/udm.log
+    #  level: info   # fatal|error|warn|info(default)|debug|trace
+
+    global:
+      max:
+        ue: 1500 # The number of UE can be increased depending on memory size.
+    #    peer: 64
     
     sbi:
       server:
@@ -37,8 +44,12 @@ data:
           scheme: 2
           key: /etc/open5gs/hnet/secp256r1-6.key
       sbi:
-        - dev: eth0
-          advertise: open5gs-udm
+        server:
+          - dev: eth0
+            advertise: open5gs-udm
+        client:
+          nrf:
+            - uri: http://open5gs-nrf:80
 
     nrf:
       sbi:

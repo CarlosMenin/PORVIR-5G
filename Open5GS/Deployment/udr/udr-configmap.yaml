@@ -7,9 +7,17 @@ metadata:
     epc-mode: udr
 data:
   udr.yaml: |
+    
     db_uri: mongodb://open5gs-mongodb-svc/open5gs
+    
     logger:
-        file: /var/log/open5gs/udr.log
+      path:
+        file: /opt/open5gs/var/log/open5gs/udr.log
+    
+    global:
+      max:
+        ue: 1500  # The number of UE can be increased depending on memory size.
+    #    peer: 64
     
     sbi:
       server:
@@ -18,9 +26,13 @@ data:
         no_tls: true
 
     udr:
-        sbi:
+      sbi:
+        server:
           - dev: eth0
             advertise: open5gs-udr
+        client:
+          nrf:
+            - uri: http://open5gs-nrf:80
 
     nrf:
       sbi:

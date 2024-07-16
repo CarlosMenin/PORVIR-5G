@@ -8,7 +8,13 @@ metadata:
 data:
   ausf.yaml: |
     logger:
-        file: /var/log/open5gs/ausf.log
+      path:
+        file: /opt/open5gs/var/log/open5gs/amf.log
+      
+    global:
+      max:
+        ue: 1500  # The number of UE can be increased depending on memory size.
+    #    peer: 64
 
     sbi:
       server:
@@ -23,9 +29,14 @@ data:
         cert: /etc/open5gs/tls/ausf.crt
 
     ausf:
-        sbi:
-          - dev: eth0
-            advertise: open5gs-ausf
+      sbi:
+        server:
+            - dev: eth0
+              advertise: open5gs-ausf
+        client:
+          nrf:
+            - uri: http://open5gs-nrf:80
+          
     nrf:
         sbi:
           - name: open5gs-nrf

@@ -49,7 +49,7 @@ spec:
         kubernetes.io/hostname: metallica
       containers:
         - name: upf1
-          image: maikovisky/open5gs:2.6.4
+          image: gradiant/open5gs:2.7.1
           imagePullPolicy: Always
           ports:
             - name: http2-80
@@ -97,7 +97,13 @@ metadata:
 data:
   upf.yaml: |-
     logger:
-        file: /var/log/open5gs/upf.log
+      path:
+        file: /opt/open5gs/var/log/open5gs/upf.log
+
+    global:
+      max:
+        ue: 1500  # The number of UE can be increased depending on memory size.
+    #    peer: 64
 
     #  <PFCP Server>
     sbi:
@@ -107,22 +113,24 @@ data:
         no_tls: true
     upf:
       pfcp:
-        - dev eth0
+        server:
+          - dev: eth0
+        client:
+          smf:
+            - address: open5gs-smf
       gtpu:
-        - dev eth0
+        server:
+          - dev: eth0
       metrics:
-        - addr: 0.0.0.0
-          port: 9090
-      subnet:
-        - addr: 10.41.0.1/16
+        server:
+          - address: 0.0.0.0
+            port: 9090
+      session:
+        - subnet: 10.45.0.0/16
+          gateway: 10.45.0.1
           dnn: default
-          dev: ogstun
-        # - addr: 10.41.0.1/16
-        #   dnn: slice01
-        #   dev: slice01       
-    smf:
-      pfcp:
-        addr: open5gs-smf
+          dev: ogstun     
+
   entrypoint.sh: |-
     #!/bin/bash
     set -e
@@ -131,12 +139,12 @@ data:
     #echo "Creating net device {{ .dev }}"
     if grep "ogstun" /proc/net/dev > /dev/null; then
       echo "[WARNING] Net device ogstun already exists!"
-      ip addr add 10.41.0.1/16 dev ogstun || true
+      ip addr add 10.45.0.1/16 dev ogstun || true
       ip link set ogstun up
     else 
       echo "[INFO] Create device ogstun!"
       ip tuntap add name ogstun mode tun
-      ip addr add 10.41.0.1/16 dev ogstun || true
+      ip addr add 10.45.0.1/16 dev ogstun || true
       ip link set ogstun up
     fi
 

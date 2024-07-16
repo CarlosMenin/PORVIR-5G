@@ -42,28 +42,8 @@ spec:
         kubernetes.io/arch: amd64
         kubernetes.io/hostname: metallica
       containers:
-        - name: tcpdump-nrf
-          image: maikovisky/open5gs:2.6.4
-          imagePullPolicy: Always
-          command:
-            [
-              "/bin/tcpdump",
-              "-i",
-              "eth0",
-              "-s",
-              "65535",
-              "-G",
-              "3600",
-              "-w",
-              "/var/tcpdump/nrf-%F_%H%M.pcap",
-            ]
-          volumeMounts:
-            - name: "dev-net-tun"
-              mountPath: "/dev/net/tun" # Needed for VPN
-            - name: tcpdump-persistent-storage
-              mountPath: /var/tcpdump
         - name: nrf
-          image: maikovisky/open5gs:2.6.4
+          image: gradiant/open5gs:2.7.1
           imagePullPolicy: Always
           ports:
             - name: http2-80

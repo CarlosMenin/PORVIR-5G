@@ -7,9 +7,14 @@ metadata:
     epc-mode: bsf
 data:
   bsf.yaml: |
-    db_uri: mongodb://open5gs-mongodb-svc/open5gs
     logger:
-        file: /var/log/open5gs/bsf.log
+      path:
+        file: /opt/open5gs/var/log/open5gs/bsf.log
+
+    global:
+      max:
+        ue: 1500  # The number of UE can be increased depending on memory size.
+    #    peer: 64
 
     sbi:
       server:
@@ -18,12 +23,13 @@ data:
         no_tls: true
 
     bsf:
-        sbi:
-          - addr: 0.0.0.0
+      sbi:
+        server:
+          - address: 0.0.0.0
             advertise: open5gs-bsf
-    nrf:
-        sbi:
-          - name: open5gs-nrf
+        client:
+          nrf:
+            - uri: http://open5gs-nrf:80
 
     # scp:
     #   sbi:

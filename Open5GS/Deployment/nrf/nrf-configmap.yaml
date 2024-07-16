@@ -8,9 +8,14 @@ metadata:
 data:
   nrf.yaml: |
     logger:
-    #    level: debug
-        file: /var/log/open5gs/nrf.log
-    
+      path:
+        file: /opt/open5gs/var/log/open5gs/nrf.log
+
+    global:
+      max:
+        ue: 1500  # The number of UE can be increased depending on memory size.
+    #    peer: 64
+
     sbi:
       server:
         no_tls: true
@@ -24,8 +29,13 @@ data:
         cert: /etc/open5gs/tls/nrf.crt
 
     nrf:
+      serving: # 5G roaming requires PLMN in NRF
+      - plmn_id:
+          mcc: 999
+          mnc: 70
       sbi:
-        - addr: 0.0.0.0
+        server:
+        - address: 0.0.0.0
           advertise: open5gs-nrf
 
     # scp:

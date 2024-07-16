@@ -7,10 +7,16 @@ metadata:
     epc-mode: pcf
 data:
   pcf.yaml: |
+    db_uri: mongodb://mongo/open5gs
+    
     logger:
-        file: /var/log/open5gs/pcf.log
+      path:
+        file: /opt/open5gs/var/log/open5gs/pcf.log
 
-    db_uri: mongodb://open5gs-mongodb-svc/open5gs
+    global:
+      max:
+        ue: 1500  # The number of UE can be increased depending on memory size.
+    #    peer: 64
 
     sbi:
       server:
@@ -20,16 +26,16 @@ data:
 
     pcf:
       sbi:
-        - addr: 0.0.0.0
-          advertise: open5gs-pcf
+        server:
+          - address: 0.0.0.0
+            advertise: open5gs-pcf
+        client:
+          nrf:
+            - uri: http://open5gs-nrf:80
       metrics:
-        - addr: 0.0.0.0
-          port: 9090
-
-    # scp:
-    #   sbi:
-    #     - name: open5gs-scp
-
+        server:
+          - address: 0.0.0.0
+            port: 9090
     nrf:
       sbi:
         - name: open5gs-nrf

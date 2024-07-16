@@ -55,7 +55,7 @@ spec:
         #kubernetes.io/hostname: molejo
       containers:
         - name: tcpdump-iperf
-          image: maikovisky/open5gs:2.6.4
+          image: gradiant/open5gs:2.7.1
           command:
             [
               "/bin/tcpdump",
