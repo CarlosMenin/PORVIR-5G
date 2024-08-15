@@ -46,7 +46,6 @@ for arquivo in os.listdir(pasta):
         plt.title(title, fontsize=14)
         plt.xlabel('Experiment Time (s)', fontsize=12)
         plt.ylabel('Time to Connection (ms)', fontsize=12)
-        plt.legend(loc='upper right', fontsize='small')
         plt.grid(True)
         plt.tight_layout()
 

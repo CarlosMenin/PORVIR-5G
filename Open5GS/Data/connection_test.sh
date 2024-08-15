@@ -69,14 +69,15 @@ kill $PORT_FORWARD_PID
 echo "Running experiment"
 
 # Number of UEs and gnBs
-kubectl scale --replicas=10 statefulsets open5gs-my5grantester --namespace cemenin
+kubectl scale --replicas=50 statefulsets open5gs-my5grantester --namespace cemenin
 
 # Delay
 echo "Waiting connections for experiment"
 sleep $((60))
 
 echo "Waiting for experiment to finish"
-sleep $((1200))
+echo "Press enter to continue..."
+read
 
 cd ../Data
 ./capture_and_parse_logs.sh $test_name
@@ -85,7 +86,7 @@ echo "Clear experiment environment"
 kubectl scale --replicas=0 statefulsets open5gs-my5grantester --namespace cemenin
 
 # Delete tester pods
-for j in $(seq 0 $((9))); do
+for j in $(seq 0 $((49))); do
     kubectl delete pod open5gs-my5grantester-$j --namespace cemenin &
 done
 sleep 40

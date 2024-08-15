@@ -51,7 +51,6 @@ spec:
             privileged: true
             capabilities:
               add: ["NET_ADMIN", "SYS_MODULE"]
-
           volumeMounts:
             - name: open5gs-bsf-config
               mountPath: /open5gs/config-map/bsf.yaml

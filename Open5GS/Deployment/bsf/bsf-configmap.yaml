@@ -13,7 +13,7 @@ data:
 
     global:
       max:
-        ue: 1500  # The number of UE can be increased depending on memory size.
+        ue: 5000  # The number of UE can be increased depending on memory size.
     #    peer: 64
 
     sbi:

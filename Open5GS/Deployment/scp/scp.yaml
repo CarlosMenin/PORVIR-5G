@@ -56,13 +56,7 @@ spec:
             privileged: true
             capabilities:
               add: ["NET_ADMIN", "SYS_MODULE"]
-          resources:
-            requests:
-              memory: "150Mi"
-              cpu: "100m"
-            limits:
-              memory: "250Mi"
-              cpu: "200m"
+
           volumeMounts:
             - name: open5gs-scp-config
               mountPath: /open5gs/config-map/scp.yaml
