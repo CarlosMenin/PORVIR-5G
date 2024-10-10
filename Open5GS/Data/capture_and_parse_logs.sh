@@ -32,8 +32,8 @@ wget https://raw.githubusercontent.com/gabriel-lando/my5G-RANTester-Logs-Parser/
 
 # Parse logs
 echo "Parsing logs..."
-sudo docker build . -t lando/my5grantester-logs-parser >/dev/null 2>&1
-sudo docker run --rm -e INPUT="my5grantester_logs.txt" -e OUTPUT=$OUTPUT_FILE -v $WORK_DIR/my5grantester_logs/:/data lando/my5grantester-logs-parser >/dev/null 2>&1
+docker build . -t lando/my5grantester-logs-parser >/dev/null 2>&1
+docker run --rm -e INPUT="my5grantester_logs.txt" -e OUTPUT=$OUTPUT_FILE -v $WORK_DIR/my5grantester_logs/:/data lando/my5grantester-logs-parser >/dev/null 2>&1
 
 # Move output file
 mv $OUTPUT_FILE $WORK_DIR >/dev/null 2>&1

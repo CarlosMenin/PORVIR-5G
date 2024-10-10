@@ -44,16 +44,4 @@ spec:
       - name: mongodb-persistent-storage
         persistentVolumeClaim:
           claimName: open5gs-mongodb-pv-claim
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: open5gs-mongodb-pv-claim
-  namespace: cemenin
-spec:
-  storageClassName: rook-ceph-fs-simple
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 100Mi
+
