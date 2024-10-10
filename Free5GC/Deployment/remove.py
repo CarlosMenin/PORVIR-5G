@@ -3,7 +3,7 @@ import subprocess
 import time
 
 def aplicar_manifesto(caminho_do_arquivo):
-    comando = f'kubectl apply -f {caminho_do_arquivo}'
+    comando = f'kubectl delete -f {caminho_do_arquivo}'
     processo = subprocess.Popen(comando, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     saida, erro = processo.communicate()
     
@@ -17,9 +17,9 @@ def aplicar_manifestos_na_pasta(pasta):
         if arquivo.endswith(".yaml"):
             caminho_completo = os.path.join(pasta, arquivo)
             aplicar_manifesto(caminho_completo)
-    time.sleep(15)
+    time.sleep(5)
 
-pastas = ['base','upf', 'mongo', 'nrf', 'amf', 'ausf', 'nssf', 'pcf', 'smf', 'udm', 'udr', 'webui']
+pastas = ['upf', 'mongo', 'nrf', 'amf', 'ausf', 'nssf', 'pcf', 'smf', 'udm', 'udr', 'webui']
 
 for pasta in pastas:
     aplicar_manifestos_na_pasta("Deployment/"+pasta)

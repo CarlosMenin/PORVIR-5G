@@ -16,7 +16,7 @@ documentos = []
 valor_inicial = "208930000000000"
 
 # Define a quantidade de UEs que queira cadastrar
-qtd_UE = 1000
+qtd_UE = 5000
 
 # Cria os documentos 
 for num_UE in range(qtd_UE):

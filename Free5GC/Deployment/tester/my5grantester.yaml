@@ -20,7 +20,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: amd64
-        kubernetes.io/hostname: acdc
+        kubernetes.io/hostname: petshopboys
       containers:
         - name: my5grantester
           image:  carlosmenin/my5grantester:latest

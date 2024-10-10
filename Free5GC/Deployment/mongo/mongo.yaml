@@ -46,16 +46,3 @@ spec:
       - name: mongodb-persistent-storage
         persistentVolumeClaim:
           claimName: free5gc-mongodb-pv-claim
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: free5gc-mongodb-pv-claim
-  namespace: free5gc
-spec:
-  storageClassName: rook-ceph-fs-simple
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 100Mi

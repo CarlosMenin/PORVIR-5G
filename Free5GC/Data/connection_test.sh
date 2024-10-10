@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if at least 3 arguments are provided
-if [ $# -lt 2 ]; then
-    echo -e "\nUsage: $0 [division|decrement|parallel] num_ue delay interval divdec\n"
+if [ $# -lt 3 ]; then
+    echo -e "\nUsage: $0 [division|decrement|parallel] num_ue delay interval divdec repetitions\n"
     exit 0
 fi
 
@@ -17,81 +17,100 @@ test=$1
 
 # Check the number of arguments based on the test
 if [[ "$test" == "parallel" ]]; then
-    if [ $# -ne 3 ]; then
-        echo -e "\nUsage for 'parallel': $0 parallel num_ue delay\n"
+    if [ $# -ne 4 ]; then
+        echo -e "\nUsage for 'parallel': $0 parallel num_ue delay repetitions\n"
         exit 1
     fi
     num_ue=$2
     delay=$3
-    test_name=my5grantester_free5gc_${test}_${num_ue}_0.csv
+    repetitions=$4
 else
-    if [ $# -ne 5 ]; then
-        echo -e "\nUsage for 'division' or 'decrement': $0 [division|decrement] num_ue delay interval factor\n"
+    if [ $# -ne 6 ]; then
+        echo -e "\nUsage for 'division' or 'decrement': $0 [division|decrement] num_ue delay interval factor repetitions\n"
         exit 1
     fi
     num_ue=$2
     delay=$3
     interval=$4
     divdec=$5
-    test_name=my5grantester_free5gc_${test}_${num_ue}_${delay}_${divdec}_${interval}_0.csv
+    repetitions=$6
 fi
 
-# Path to the YAML file
-yaml_file="../Deployment/tester/my5grantester.yaml"
-copy_file="../Deployment/tester/my5grantester2.yaml" 
+# Loop through the number of repetitions
+for i in $(seq 1 $repetitions); do
+    start_time=$(date +%s)
+    if [[ "$test" == "parallel" ]]; then
+        test_name=my5grantester_free5gc_${test}_${num_ue}_0_${i}.csv
+    else
+        test_name=my5grantester_free5gc_${test}_${num_ue}_${delay}_${divdec}_${interval}_0_${i}.csv
+    fi
+    # Path to the YAML file
+    yaml_file="../Deployment/tester/my5grantester.yaml"
+    copy_file="../Deployment/tester/my5grantester2.yaml" 
 
-cp $yaml_file $copy_file
+    cp $yaml_file $copy_file
 
-# Update the YAML file with the provided values
-sed -i 's/\$TEST\b/'"$test"'/g' $copy_file
-sed -i 's/\$NUM_UE\b/'"$num_ue"'/g' $copy_file
-sed -i 's/\$DELAY\b/'"$delay"'/g' $copy_file
+    # Update the YAML file with the provided values
+    sed -i 's/\$TEST\b/'"$test"'/g' $copy_file
+    sed -i 's/\$NUM_UE\b/'"$num_ue"'/g' $copy_file
+    sed -i 's/\$DELAY\b/'"$delay"'/g' $copy_file
 
-# Only update INTERVAL and FACTOR if operation is not parallel
-if [[ "$test" != "parallel" ]]; then
-    sed -i 's/\$INTERVAL\b/'"$divdec"'/g' $copy_file
-    sed -i 's/\$CONSTANT\b/'"$interval"'/g' $copy_file
-fi
+    # Only update INTERVAL and FACTOR if operation is not parallel
+    if [[ "$test" != "parallel" ]]; then
+        sed -i 's/\$INTERVAL\b/'"$divdec"'/g' $copy_file
+        sed -i 's/\$CONSTANT\b/'"$interval"'/g' $copy_file
+    fi
 
-kubectl apply -f $copy_file
+    kubectl apply -f $copy_file
 
-rm $copy_file
+    rm $copy_file
 
-cd ..
-python3 Deployment/start.py
+    cd ..
+    python3 Deployment/start.py
 
-kubectl port-forward deployment/free5gc-mongodb 63145:27017 --namespace free5gc &
-PORT_FORWARD_PID=$!
+    kubectl port-forward deployment/free5gc-mongodb 63145:27017 --namespace free5gc &
+    PORT_FORWARD_PID=$!
 
-python3 Deployment/Database/policyData.ues.amData.py
-python3 Deployment/Database/policyData.ues.qosFlow.py
-python3 Deployment/Database/policyData.ues.smData.py
-python3 Deployment/Database/subscriptionData.authenticationData.authenticationSubscription.py
-python3 Deployment/Database/subscriptionData.provisionedData.amData.py
-python3 Deployment/Database/subscriptionData.provisionedData.smData.py
-python3 Deployment/Database/subscriptionData.provisionedData.smfSelectionSubscriptionData.py
-kill $PORT_FORWARD_PID
+    python3 Deployment/Database/policyData.ues.amData.py
+    python3 Deployment/Database/policyData.ues.qosFlow.py
+    python3 Deployment/Database/policyData.ues.smData.py
+    python3 Deployment/Database/subscriptionData.authenticationData.authenticationSubscription.py
+    python3 Deployment/Database/subscriptionData.provisionedData.amData.py
+    python3 Deployment/Database/subscriptionData.provisionedData.smData.py
+    python3 Deployment/Database/subscriptionData.provisionedData.smfSelectionSubscriptionData.py
+    kill $PORT_FORWARD_PID
 
-echo "Running experiment"
+    echo "Running experiment $i"
 
-# Number of UEs and gnBs
-kubectl scale --replicas=10 statefulsets free5gc-my5grantester --namespace free5gc
+    # Number of UEs and gnBs
+    kubectl scale --replicas=50 statefulsets free5gc-my5grantester --namespace free5gc
 
-# Delay
-echo "Waiting connections for experiment"
-sleep $((60))
+    # Delay
+    echo "Waiting connections for experiment"
+    sleep $((500))
 
-echo "Waiting for experiment to finish"
-sleep $((180))
+    echo "Waiting for experiment to finish"
+    sleep $((400))
 
-cd Data
-./capture_and_parse_logs.sh $test_name
+    cd Data
+    ./capture_and_parse_logs.sh $test_name
 
-echo "Clear experiment environment"
-kubectl scale --replicas=0 statefulsets free5gc-my5grantester --namespace free5gc
+    echo "Clear experiment environment"
+    kubectl scale --replicas=0 statefulsets free5gc-my5grantester --namespace free5gc
 
-# Delete tester pods
-for j in $(seq 0 $((9))); do
-    kubectl delete pod free5gc-my5grantester-$j --namespace free5gc &
+    # Delete tester pods
+    for j in $(seq 0 $((49))); do
+        kubectl delete pod free5gc-my5grantester-$j --namespace free5gc &
+    done
+    
+    cd ..
+    python3 Deployment/remove.py
+    sleep 10
+    end_time=$(date +%s)
+    
+    cd Data
+    
+    python3 getdata.py "$start_time" "$end_time" --output_csv "${start_time}-${end_time}.csv" --output_image "${start_time}-${end_time}.png"
+
 done
-sleep 40
+
